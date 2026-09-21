@@ -1,0 +1,9 @@
+data/
+docs/figures/
+
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.env
+.DS_Store

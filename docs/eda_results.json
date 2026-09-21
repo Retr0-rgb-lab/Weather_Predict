@@ -1,0 +1,2571 @@
+{
+  "shape": {
+    "rows": 3654,
+    "cols": 165,
+    "features": 163
+  },
+  "date": {
+    "first": "2000-01-01",
+    "last": "2010-01-01",
+    "n_days": 3654,
+    "span_days": 3654,
+    "continuous": true,
+    "duplicate_dates": 0,
+    "month_col_consistent": true,
+    "leap_years": [
+      2000,
+      2004,
+      2008
+    ]
+  },
+  "variable_counts": {
+    "temp_mean": 18,
+    "temp_min": 17,
+    "temp_max": 18,
+    "humidity": 16,
+    "precipitation": 17,
+    "global_radiation": 16,
+    "sunshine": 14,
+    "cloud_cover": 13,
+    "pressure": 15,
+    "wind_speed": 12,
+    "wind_gust": 7
+  },
+  "station_counts": {
+    "BASEL": 9,
+    "BUDAPEST": 8,
+    "DE_BILT": 11,
+    "DRESDEN": 10,
+    "DUSSELDORF": 11,
+    "HEATHROW": 9,
+    "KASSEL": 10,
+    "LJUBLJANA": 10,
+    "MAASTRICHT": 11,
+    "MALMO": 5,
+    "MONTELIMAR": 8,
+    "MUENCHEN": 11,
+    "OSLO": 11,
+    "PERPIGNAN": 8,
+    "ROMA": 8,
+    "SONNBLICK": 8,
+    "STOCKHOLM": 7,
+    "TOURS": 8
+  },
+  "group_counts": {
+    "Thermal": 53,
+    "Moisture": 33,
+    "Radiation / cloud": 43,
+    "Dynamic / pressure": 34
+  },
+  "station_variable_table": {
+    "BASEL": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min"
+    ],
+    "BUDAPEST": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean"
+    ],
+    "DE_BILT": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "DRESDEN": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "DUSSELDORF": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "HEATHROW": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min"
+    ],
+    "KASSEL": [
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "LJUBLJANA": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_speed"
+    ],
+    "MAASTRICHT": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "MALMO": [
+      "precipitation",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_speed"
+    ],
+    "MONTELIMAR": [
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_speed"
+    ],
+    "MUENCHEN": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "OSLO": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_gust",
+      "wind_speed"
+    ],
+    "PERPIGNAN": [
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_speed"
+    ],
+    "ROMA": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min"
+    ],
+    "SONNBLICK": [
+      "cloud_cover",
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min"
+    ],
+    "STOCKHOLM": [
+      "cloud_cover",
+      "precipitation",
+      "pressure",
+      "sunshine",
+      "temp_max",
+      "temp_mean",
+      "temp_min"
+    ],
+    "TOURS": [
+      "global_radiation",
+      "humidity",
+      "precipitation",
+      "pressure",
+      "temp_max",
+      "temp_mean",
+      "temp_min",
+      "wind_speed"
+    ]
+  },
+  "absent_pairs": [
+    {
+      "station": "BUDAPEST",
+      "variable": "temp_min"
+    },
+    {
+      "station": "MALMO",
+      "variable": "humidity"
+    },
+    {
+      "station": "STOCKHOLM",
+      "variable": "humidity"
+    },
+    {
+      "station": "ROMA",
+      "variable": "precipitation"
+    },
+    {
+      "station": "MALMO",
+      "variable": "global_radiation"
+    },
+    {
+      "station": "STOCKHOLM",
+      "variable": "global_radiation"
+    },
+    {
+      "station": "MALMO",
+      "variable": "sunshine"
+    },
+    {
+      "station": "MONTELIMAR",
+      "variable": "sunshine"
+    },
+    {
+      "station": "PERPIGNAN",
+      "variable": "sunshine"
+    },
+    {
+      "station": "TOURS",
+      "variable": "sunshine"
+    },
+    {
+      "station": "KASSEL",
+      "variable": "cloud_cover"
+    },
+    {
+      "station": "MALMO",
+      "variable": "cloud_cover"
+    },
+    {
+      "station": "MONTELIMAR",
+      "variable": "cloud_cover"
+    },
+    {
+      "station": "PERPIGNAN",
+      "variable": "cloud_cover"
+    },
+    {
+      "station": "TOURS",
+      "variable": "cloud_cover"
+    },
+    {
+      "station": "DRESDEN",
+      "variable": "pressure"
+    },
+    {
+      "station": "MALMO",
+      "variable": "pressure"
+    },
+    {
+      "station": "SONNBLICK",
+      "variable": "pressure"
+    },
+    {
+      "station": "BASEL",
+      "variable": "wind_speed"
+    },
+    {
+      "station": "BUDAPEST",
+      "variable": "wind_speed"
+    },
+    {
+      "station": "HEATHROW",
+      "variable": "wind_speed"
+    },
+    {
+      "station": "ROMA",
+      "variable": "wind_speed"
+    },
+    {
+      "station": "SONNBLICK",
+      "variable": "wind_speed"
+    },
+    {
+      "station": "STOCKHOLM",
+      "variable": "wind_speed"
+    },
+    {
+      "station": "BASEL",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "BUDAPEST",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "HEATHROW",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "LJUBLJANA",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "MALMO",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "MONTELIMAR",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "PERPIGNAN",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "ROMA",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "SONNBLICK",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "STOCKHOLM",
+      "variable": "wind_gust"
+    },
+    {
+      "station": "TOURS",
+      "variable": "wind_gust"
+    }
+  ],
+  "quality": {
+    "cells": 595602,
+    "nan_cells": 0,
+    "sentinel_-9999_cells": 0,
+    "zero_variance_cols": [],
+    "identical_column_groups": []
+  },
+  "sanity": {
+    "temp_min_gt_temp_max_cells": 41,
+    "humidity_out_of_0_1": 0,
+    "cloud_cover_out_of_0_8": 3,
+    "negative_precipitation": 0,
+    "negative_radiation_or_sunshine": 29
+  },
+  "describe_summary": {
+    "BASEL_cloud_cover": {
+      "mean": 5.418,
+      "std": 2.325,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.74,
+      "kurtosis": -0.578
+    },
+    "BASEL_humidity": {
+      "mean": 0.745,
+      "std": 0.108,
+      "min": 0.38,
+      "max": 0.98,
+      "range": 0.6,
+      "skew": -0.398,
+      "kurtosis": -0.317
+    },
+    "BASEL_pressure": {
+      "mean": 1.018,
+      "std": 0.008,
+      "min": 0.986,
+      "max": 1.041,
+      "range": 0.055,
+      "skew": -0.126,
+      "kurtosis": 0.526
+    },
+    "BASEL_global_radiation": {
+      "mean": 1.33,
+      "std": 0.935,
+      "min": 0.05,
+      "max": 3.55,
+      "range": 3.5,
+      "skew": 0.532,
+      "kurtosis": -0.92
+    },
+    "BASEL_precipitation": {
+      "mean": 0.235,
+      "std": 0.536,
+      "min": 0.0,
+      "max": 7.57,
+      "range": 7.57,
+      "skew": 4.529,
+      "kurtosis": 32.858
+    },
+    "BASEL_sunshine": {
+      "mean": 4.661,
+      "std": 4.33,
+      "min": 0.0,
+      "max": 15.3,
+      "range": 15.3,
+      "skew": 0.575,
+      "kurtosis": -0.935
+    },
+    "BASEL_temp_mean": {
+      "mean": 11.023,
+      "std": 7.415,
+      "min": -9.3,
+      "max": 29.0,
+      "range": 38.3,
+      "skew": -0.129,
+      "kurtosis": -0.765
+    },
+    "BASEL_temp_min": {
+      "mean": 6.989,
+      "std": 6.653,
+      "min": -16.0,
+      "max": 20.8,
+      "range": 36.8,
+      "skew": -0.221,
+      "kurtosis": -0.659
+    },
+    "BASEL_temp_max": {
+      "mean": 15.537,
+      "std": 8.721,
+      "min": -5.7,
+      "max": 38.6,
+      "range": 44.3,
+      "skew": -0.046,
+      "kurtosis": -0.817
+    },
+    "BUDAPEST_cloud_cover": {
+      "mean": 4.891,
+      "std": 2.386,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.357,
+      "kurtosis": -1.006
+    },
+    "BUDAPEST_humidity": {
+      "mean": 0.657,
+      "std": 0.15,
+      "min": 0.26,
+      "max": 1.0,
+      "range": 0.74,
+      "skew": 0.076,
+      "kurtosis": -0.669
+    },
+    "BUDAPEST_pressure": {
+      "mean": 1.017,
+      "std": 0.008,
+      "min": 0.989,
+      "max": 1.044,
+      "range": 0.055,
+      "skew": 0.186,
+      "kurtosis": 0.485
+    },
+    "BUDAPEST_global_radiation": {
+      "mean": 1.465,
+      "std": 0.978,
+      "min": 0.04,
+      "max": 3.49,
+      "range": 3.45,
+      "skew": 0.287,
+      "kurtosis": -1.239
+    },
+    "BUDAPEST_precipitation": {
+      "mean": 0.136,
+      "std": 0.409,
+      "min": 0.0,
+      "max": 6.96,
+      "range": 6.96,
+      "skew": 5.662,
+      "kurtosis": 48.883
+    },
+    "BUDAPEST_sunshine": {
+      "mean": 5.753,
+      "std": 4.475,
+      "min": 0.0,
+      "max": 14.9,
+      "range": 14.9,
+      "skew": 0.131,
+      "kurtosis": -1.303
+    },
+    "BUDAPEST_temp_mean": {
+      "mean": 12.175,
+      "std": 8.744,
+      "min": -9.8,
+      "max": 33.1,
+      "range": 42.9,
+      "skew": -0.159,
+      "kurtosis": -0.928
+    },
+    "BUDAPEST_temp_max": {
+      "mean": 16.629,
+      "std": 9.982,
+      "min": -6.6,
+      "max": 40.1,
+      "range": 46.7,
+      "skew": -0.142,
+      "kurtosis": -1.011
+    },
+    "DE_BILT_cloud_cover": {
+      "mean": 5.303,
+      "std": 2.279,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.76,
+      "kurtosis": -0.363
+    },
+    "DE_BILT_wind_speed": {
+      "mean": 3.395,
+      "std": 1.422,
+      "min": 0.7,
+      "max": 10.3,
+      "range": 9.6,
+      "skew": 0.963,
+      "kurtosis": 1.177
+    },
+    "DE_BILT_wind_gust": {
+      "mean": 9.986,
+      "std": 3.582,
+      "min": 2.0,
+      "max": 28.0,
+      "range": 26.0,
+      "skew": 0.907,
+      "kurtosis": 1.496
+    },
+    "DE_BILT_humidity": {
+      "mean": 0.818,
+      "std": 0.097,
+      "min": 0.37,
+      "max": 1.0,
+      "range": 0.63,
+      "skew": -0.865,
+      "kurtosis": 1.021
+    },
+    "DE_BILT_pressure": {
+      "mean": 1.015,
+      "std": 0.01,
+      "min": 0.973,
+      "max": 1.045,
+      "range": 0.072,
+      "skew": -0.27,
+      "kurtosis": 0.347
+    },
+    "DE_BILT_global_radiation": {
+      "mean": 1.191,
+      "std": 0.87,
+      "min": 0.11,
+      "max": 3.41,
+      "range": 3.3,
+      "skew": 0.588,
+      "kurtosis": -0.709
+    },
+    "DE_BILT_precipitation": {
+      "mean": 0.237,
+      "std": 0.459,
+      "min": 0.0,
+      "max": 4.25,
+      "range": 4.25,
+      "skew": 3.167,
+      "kurtosis": 13.304
+    },
+    "DE_BILT_sunshine": {
+      "mean": 4.744,
+      "std": 3.996,
+      "min": 0.0,
+      "max": 15.5,
+      "range": 15.5,
+      "skew": 0.601,
+      "kurtosis": -0.593
+    },
+    "DE_BILT_temp_mean": {
+      "mean": 10.704,
+      "std": 6.191,
+      "min": -7.9,
+      "max": 26.9,
+      "range": 34.8,
+      "skew": -0.163,
+      "kurtosis": -0.597
+    },
+    "DE_BILT_temp_min": {
+      "mean": 6.397,
+      "std": 5.64,
+      "min": -14.4,
+      "max": 20.8,
+      "range": 35.2,
+      "skew": -0.281,
+      "kurtosis": -0.488
+    },
+    "DE_BILT_temp_max": {
+      "mean": 14.799,
+      "std": 7.211,
+      "min": -4.7,
+      "max": 35.7,
+      "range": 40.4,
+      "skew": 0.014,
+      "kurtosis": -0.614
+    },
+    "DRESDEN_cloud_cover": {
+      "mean": 5.405,
+      "std": 2.195,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.827,
+      "kurtosis": -0.163
+    },
+    "DRESDEN_wind_speed": {
+      "mean": 4.257,
+      "std": 1.775,
+      "min": 1.0,
+      "max": 12.2,
+      "range": 11.2,
+      "skew": 1.047,
+      "kurtosis": 1.019
+    },
+    "DRESDEN_wind_gust": {
+      "mean": 10.925,
+      "std": 4.032,
+      "min": 2.9,
+      "max": 34.3,
+      "range": 31.4,
+      "skew": 0.996,
+      "kurtosis": 1.605
+    },
+    "DRESDEN_humidity": {
+      "mean": 0.759,
+      "std": 0.132,
+      "min": 0.32,
+      "max": 1.0,
+      "range": 0.68,
+      "skew": -0.48,
+      "kurtosis": -0.257
+    },
+    "DRESDEN_global_radiation": {
+      "mean": 1.263,
+      "std": 0.936,
+      "min": 0.03,
+      "max": 3.66,
+      "range": 3.63,
+      "skew": 0.592,
+      "kurtosis": -0.782
+    },
+    "DRESDEN_precipitation": {
+      "mean": 0.176,
+      "std": 0.46,
+      "min": 0.0,
+      "max": 15.8,
+      "range": 15.8,
+      "skew": 13.077,
+      "kurtosis": 375.696
+    },
+    "DRESDEN_sunshine": {
+      "mean": 4.816,
+      "std": 4.427,
+      "min": 0.0,
+      "max": 15.8,
+      "range": 15.8,
+      "skew": 0.608,
+      "kurtosis": -0.817
+    },
+    "DRESDEN_temp_mean": {
+      "mean": 9.801,
+      "std": 7.855,
+      "min": -16.3,
+      "max": 30.4,
+      "range": 46.7,
+      "skew": -0.145,
+      "kurtosis": -0.71
+    },
+    "DRESDEN_temp_min": {
+      "mean": 5.924,
+      "std": 6.935,
+      "min": -20.4,
+      "max": 23.5,
+      "range": 43.9,
+      "skew": -0.327,
+      "kurtosis": -0.352
+    },
+    "DRESDEN_temp_max": {
+      "mean": 13.671,
+      "std": 9.039,
+      "min": -13.6,
+      "max": 36.4,
+      "range": 50.0,
+      "skew": -0.029,
+      "kurtosis": -0.852
+    },
+    "DUSSELDORF_cloud_cover": {
+      "mean": 5.142,
+      "std": 2.116,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.682,
+      "kurtosis": -0.338
+    },
+    "DUSSELDORF_wind_speed": {
+      "mean": 3.964,
+      "std": 1.718,
+      "min": 1.0,
+      "max": 12.2,
+      "range": 11.2,
+      "skew": 0.808,
+      "kurtosis": 0.652
+    },
+    "DUSSELDORF_wind_gust": {
+      "mean": 10.592,
+      "std": 3.884,
+      "min": 2.8,
+      "max": 40.3,
+      "range": 37.5,
+      "skew": 1.026,
+      "kurtosis": 2.305
+    },
+    "DUSSELDORF_humidity": {
+      "mean": 0.756,
+      "std": 0.112,
+      "min": 0.26,
+      "max": 1.0,
+      "range": 0.74,
+      "skew": -0.68,
+      "kurtosis": 0.309
+    },
+    "DUSSELDORF_pressure": {
+      "mean": 1.016,
+      "std": 0.009,
+      "min": 0.976,
+      "max": 1.045,
+      "range": 0.069,
+      "skew": -0.224,
+      "kurtosis": 0.388
+    },
+    "DUSSELDORF_global_radiation": {
+      "mean": 1.147,
+      "std": 0.881,
+      "min": 0.11,
+      "max": 3.49,
+      "range": 3.38,
+      "skew": 0.693,
+      "kurtosis": -0.585
+    },
+    "DUSSELDORF_precipitation": {
+      "mean": 0.218,
+      "std": 0.44,
+      "min": 0.0,
+      "max": 5.74,
+      "range": 5.74,
+      "skew": 3.755,
+      "kurtosis": 21.368
+    },
+    "DUSSELDORF_sunshine": {
+      "mean": 4.324,
+      "std": 4.209,
+      "min": 0.0,
+      "max": 16.0,
+      "range": 16.0,
+      "skew": 0.766,
+      "kurtosis": -0.526
+    },
+    "DUSSELDORF_temp_mean": {
+      "mean": 11.142,
+      "std": 6.689,
+      "min": -11.1,
+      "max": 29.2,
+      "range": 40.3,
+      "skew": -0.118,
+      "kurtosis": -0.602
+    },
+    "DUSSELDORF_temp_min": {
+      "mean": 6.866,
+      "std": 6.151,
+      "min": -19.9,
+      "max": 21.5,
+      "range": 41.4,
+      "skew": -0.313,
+      "kurtosis": -0.322
+    },
+    "DUSSELDORF_temp_max": {
+      "mean": 15.312,
+      "std": 7.779,
+      "min": -8.5,
+      "max": 38.5,
+      "range": 47.0,
+      "skew": 0.044,
+      "kurtosis": -0.685
+    },
+    "HEATHROW_cloud_cover": {
+      "mean": 5.272,
+      "std": 2.012,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.725,
+      "kurtosis": -0.108
+    },
+    "HEATHROW_humidity": {
+      "mean": 0.758,
+      "std": 0.102,
+      "min": 0.42,
+      "max": 1.0,
+      "range": 0.58,
+      "skew": -0.298,
+      "kurtosis": -0.47
+    },
+    "HEATHROW_pressure": {
+      "mean": 1.015,
+      "std": 0.011,
+      "min": 0.972,
+      "max": 1.044,
+      "range": 0.072,
+      "skew": -0.389,
+      "kurtosis": 0.384
+    },
+    "HEATHROW_global_radiation": {
+      "mean": 1.197,
+      "std": 0.882,
+      "min": 0.12,
+      "max": 3.49,
+      "range": 3.37,
+      "skew": 0.649,
+      "kurtosis": -0.668
+    },
+    "HEATHROW_precipitation": {
+      "mean": 0.178,
+      "std": 0.368,
+      "min": 0.0,
+      "max": 3.66,
+      "range": 3.66,
+      "skew": 3.436,
+      "kurtosis": 16.094
+    },
+    "HEATHROW_sunshine": {
+      "mean": 4.433,
+      "std": 3.983,
+      "min": 0.0,
+      "max": 15.5,
+      "range": 15.5,
+      "skew": 0.653,
+      "kurtosis": -0.548
+    },
+    "HEATHROW_temp_mean": {
+      "mean": 11.822,
+      "std": 5.61,
+      "min": -2.2,
+      "max": 29.0,
+      "range": 31.2,
+      "skew": 0.003,
+      "kurtosis": -0.727
+    },
+    "HEATHROW_temp_min": {
+      "mean": 8.003,
+      "std": 5.23,
+      "min": -6.8,
+      "max": 20.6,
+      "range": 27.4,
+      "skew": -0.182,
+      "kurtosis": -0.725
+    },
+    "HEATHROW_temp_max": {
+      "mean": 15.637,
+      "std": 6.385,
+      "min": 0.2,
+      "max": 37.9,
+      "range": 37.7,
+      "skew": 0.149,
+      "kurtosis": -0.575
+    },
+    "KASSEL_wind_speed": {
+      "mean": 2.478,
+      "std": 0.999,
+      "min": 0.0,
+      "max": 7.6,
+      "range": 7.6,
+      "skew": 0.857,
+      "kurtosis": 0.816
+    },
+    "KASSEL_wind_gust": {
+      "mean": 9.33,
+      "std": 3.373,
+      "min": 2.1,
+      "max": 41.0,
+      "range": 38.9,
+      "skew": 1.051,
+      "kurtosis": 3.147
+    },
+    "KASSEL_humidity": {
+      "mean": 0.785,
+      "std": 0.121,
+      "min": 0.34,
+      "max": 1.0,
+      "range": 0.66,
+      "skew": -0.702,
+      "kurtosis": 0.24
+    },
+    "KASSEL_pressure": {
+      "mean": 1.016,
+      "std": 0.009,
+      "min": 0.979,
+      "max": 1.046,
+      "range": 0.067,
+      "skew": -0.135,
+      "kurtosis": 0.377
+    },
+    "KASSEL_global_radiation": {
+      "mean": 1.183,
+      "std": 0.883,
+      "min": 0.03,
+      "max": 3.47,
+      "range": 3.44,
+      "skew": 0.598,
+      "kurtosis": -0.735
+    },
+    "KASSEL_precipitation": {
+      "mean": 0.202,
+      "std": 0.407,
+      "min": 0.0,
+      "max": 5.42,
+      "range": 5.42,
+      "skew": 3.757,
+      "kurtosis": 22.126
+    },
+    "KASSEL_sunshine": {
+      "mean": 4.137,
+      "std": 4.16,
+      "min": 0.0,
+      "max": 15.0,
+      "range": 15.0,
+      "skew": 0.812,
+      "kurtosis": -0.496
+    },
+    "KASSEL_temp_mean": {
+      "mean": 9.581,
+      "std": 7.204,
+      "min": -14.5,
+      "max": 28.4,
+      "range": 42.9,
+      "skew": -0.119,
+      "kurtosis": -0.658
+    },
+    "KASSEL_temp_min": {
+      "mean": 5.587,
+      "std": 6.349,
+      "min": -19.0,
+      "max": 21.1,
+      "range": 40.1,
+      "skew": -0.29,
+      "kurtosis": -0.361
+    },
+    "KASSEL_temp_max": {
+      "mean": 13.822,
+      "std": 8.546,
+      "min": -12.1,
+      "max": 36.7,
+      "range": 48.8,
+      "skew": 0.011,
+      "kurtosis": -0.808
+    },
+    "LJUBLJANA_cloud_cover": {
+      "mean": 4.93,
+      "std": 2.368,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.281,
+      "kurtosis": -1.096
+    },
+    "LJUBLJANA_wind_speed": {
+      "mean": 1.301,
+      "std": 0.63,
+      "min": 0.1,
+      "max": 5.1,
+      "range": 5.0,
+      "skew": 1.15,
+      "kurtosis": 1.845
+    },
+    "LJUBLJANA_humidity": {
+      "mean": 0.743,
+      "std": 0.137,
+      "min": 0.36,
+      "max": 0.99,
+      "range": 0.63,
+      "skew": -0.153,
+      "kurtosis": -0.868
+    },
+    "LJUBLJANA_pressure": {
+      "mean": 1.018,
+      "std": 0.008,
+      "min": 0.983,
+      "max": 1.044,
+      "range": 0.06,
+      "skew": 0.078,
+      "kurtosis": 0.525
+    },
+    "LJUBLJANA_global_radiation": {
+      "mean": 1.414,
+      "std": 1.0,
+      "min": 0.04,
+      "max": 3.55,
+      "range": 3.51,
+      "skew": 0.393,
+      "kurtosis": -1.152
+    },
+    "LJUBLJANA_precipitation": {
+      "mean": 0.367,
+      "std": 0.916,
+      "min": 0.0,
+      "max": 8.64,
+      "range": 8.64,
+      "skew": 3.828,
+      "kurtosis": 18.126
+    },
+    "LJUBLJANA_sunshine": {
+      "mean": 5.412,
+      "std": 4.507,
+      "min": 0.0,
+      "max": 15.0,
+      "range": 15.0,
+      "skew": 0.274,
+      "kurtosis": -1.214
+    },
+    "LJUBLJANA_temp_mean": {
+      "mean": 11.512,
+      "std": 8.251,
+      "min": -10.8,
+      "max": 28.4,
+      "range": 39.2,
+      "skew": -0.141,
+      "kurtosis": -0.889
+    },
+    "LJUBLJANA_temp_min": {
+      "mean": 7.072,
+      "std": 7.355,
+      "min": -16.2,
+      "max": 21.5,
+      "range": 37.7,
+      "skew": -0.302,
+      "kurtosis": -0.727
+    },
+    "LJUBLJANA_temp_max": {
+      "mean": 16.352,
+      "std": 9.509,
+      "min": -7.5,
+      "max": 37.3,
+      "range": 44.8,
+      "skew": -0.119,
+      "kurtosis": -0.958
+    },
+    "MAASTRICHT_cloud_cover": {
+      "mean": 5.338,
+      "std": 2.402,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.817,
+      "kurtosis": -0.385
+    },
+    "MAASTRICHT_wind_speed": {
+      "mean": 4.206,
+      "std": 1.883,
+      "min": 1.0,
+      "max": 12.3,
+      "range": 11.3,
+      "skew": 1.029,
+      "kurtosis": 1.061
+    },
+    "MAASTRICHT_wind_gust": {
+      "mean": 10.729,
+      "std": 4.069,
+      "min": 3.0,
+      "max": 31.0,
+      "range": 28.0,
+      "skew": 0.889,
+      "kurtosis": 0.972
+    },
+    "MAASTRICHT_humidity": {
+      "mean": 0.792,
+      "std": 0.11,
+      "min": 0.37,
+      "max": 1.0,
+      "range": 0.63,
+      "skew": -0.632,
+      "kurtosis": 0.19
+    },
+    "MAASTRICHT_pressure": {
+      "mean": 1.016,
+      "std": 0.009,
+      "min": 0.976,
+      "max": 1.043,
+      "range": 0.068,
+      "skew": -0.26,
+      "kurtosis": 0.391
+    },
+    "MAASTRICHT_global_radiation": {
+      "mean": 1.193,
+      "std": 0.903,
+      "min": 0.03,
+      "max": 3.52,
+      "range": 3.49,
+      "skew": 0.615,
+      "kurtosis": -0.71
+    },
+    "MAASTRICHT_precipitation": {
+      "mean": 0.221,
+      "std": 0.444,
+      "min": 0.0,
+      "max": 5.87,
+      "range": 5.87,
+      "skew": 3.619,
+      "kurtosis": 19.915
+    },
+    "MAASTRICHT_sunshine": {
+      "mean": 4.652,
+      "std": 4.015,
+      "min": 0.0,
+      "max": 15.2,
+      "range": 15.2,
+      "skew": 0.641,
+      "kurtosis": -0.591
+    },
+    "MAASTRICHT_temp_mean": {
+      "mean": 10.84,
+      "std": 6.604,
+      "min": -12.1,
+      "max": 28.8,
+      "range": 40.9,
+      "skew": -0.129,
+      "kurtosis": -0.587
+    },
+    "MAASTRICHT_temp_min": {
+      "mean": 6.855,
+      "std": 5.955,
+      "min": -16.2,
+      "max": 21.3,
+      "range": 37.5,
+      "skew": -0.293,
+      "kurtosis": -0.463
+    },
+    "MAASTRICHT_temp_max": {
+      "mean": 14.806,
+      "std": 7.653,
+      "min": -7.8,
+      "max": 36.3,
+      "range": 44.1,
+      "skew": 0.016,
+      "kurtosis": -0.667
+    },
+    "MALMO_wind_speed": {
+      "mean": 2.918,
+      "std": 1.534,
+      "min": 0.0,
+      "max": 9.5,
+      "range": 9.5,
+      "skew": 0.786,
+      "kurtosis": 0.486
+    },
+    "MALMO_precipitation": {
+      "mean": 0.167,
+      "std": 0.395,
+      "min": 0.0,
+      "max": 7.69,
+      "range": 7.69,
+      "skew": 5.337,
+      "kurtosis": 54.151
+    },
+    "MALMO_temp_mean": {
+      "mean": 9.165,
+      "std": 6.898,
+      "min": -13.8,
+      "max": 24.7,
+      "range": 38.5,
+      "skew": -0.124,
+      "kurtosis": -0.812
+    },
+    "MALMO_temp_min": {
+      "mean": 5.663,
+      "std": 6.477,
+      "min": -19.5,
+      "max": 19.7,
+      "range": 39.2,
+      "skew": -0.318,
+      "kurtosis": -0.328
+    },
+    "MALMO_temp_max": {
+      "mean": 12.732,
+      "std": 7.849,
+      "min": -7.5,
+      "max": 31.4,
+      "range": 38.9,
+      "skew": 0.024,
+      "kurtosis": -1.005
+    },
+    "MONTELIMAR_wind_speed": {
+      "mean": 3.681,
+      "std": 2.134,
+      "min": 0.0,
+      "max": 13.2,
+      "range": 13.2,
+      "skew": 0.76,
+      "kurtosis": -0.016
+    },
+    "MONTELIMAR_humidity": {
+      "mean": 0.691,
+      "std": 0.129,
+      "min": 0.34,
+      "max": 0.98,
+      "range": 0.64,
+      "skew": 0.032,
+      "kurtosis": -0.689
+    },
+    "MONTELIMAR_pressure": {
+      "mean": 1.017,
+      "std": 0.007,
+      "min": 0.986,
+      "max": 1.039,
+      "range": 0.052,
+      "skew": -0.2,
+      "kurtosis": 0.94
+    },
+    "MONTELIMAR_global_radiation": {
+      "mean": 1.648,
+      "std": 1.007,
+      "min": 0.02,
+      "max": 3.64,
+      "range": 3.62,
+      "skew": 0.236,
+      "kurtosis": -1.238
+    },
+    "MONTELIMAR_precipitation": {
+      "mean": 0.253,
+      "std": 0.911,
+      "min": 0.0,
+      "max": 15.4,
+      "range": 15.4,
+      "skew": 7.479,
+      "kurtosis": 79.59
+    },
+    "MONTELIMAR_temp_mean": {
+      "mean": 14.241,
+      "std": 7.194,
+      "min": -4.0,
+      "max": 30.8,
+      "range": 34.8,
+      "skew": -0.023,
+      "kurtosis": -0.916
+    },
+    "MONTELIMAR_temp_min": {
+      "mean": 9.535,
+      "std": 6.327,
+      "min": -8.8,
+      "max": 24.9,
+      "range": 33.7,
+      "skew": -0.104,
+      "kurtosis": -0.866
+    },
+    "MONTELIMAR_temp_max": {
+      "mean": 18.949,
+      "std": 8.558,
+      "min": -2.0,
+      "max": 41.1,
+      "range": 43.1,
+      "skew": 0.035,
+      "kurtosis": -0.824
+    },
+    "MUENCHEN_cloud_cover": {
+      "mean": 5.226,
+      "std": 2.319,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.59,
+      "kurtosis": -0.722
+    },
+    "MUENCHEN_wind_speed": {
+      "mean": 2.792,
+      "std": 1.315,
+      "min": 0.7,
+      "max": 10.4,
+      "range": 9.7,
+      "skew": 1.83,
+      "kurtosis": 4.586
+    },
+    "MUENCHEN_wind_gust": {
+      "mean": 9.77,
+      "std": 4.291,
+      "min": 2.6,
+      "max": 30.9,
+      "range": 28.3,
+      "skew": 1.193,
+      "kurtosis": 1.678
+    },
+    "MUENCHEN_humidity": {
+      "mean": 0.742,
+      "std": 0.133,
+      "min": 0.2,
+      "max": 1.0,
+      "range": 0.8,
+      "skew": -0.37,
+      "kurtosis": -0.39
+    },
+    "MUENCHEN_pressure": {
+      "mean": 1.017,
+      "std": 0.008,
+      "min": 0.984,
+      "max": 1.044,
+      "range": 0.06,
+      "skew": -0.027,
+      "kurtosis": 0.45
+    },
+    "MUENCHEN_global_radiation": {
+      "mean": 1.426,
+      "std": 0.984,
+      "min": 0.19,
+      "max": 3.65,
+      "range": 3.46,
+      "skew": 0.54,
+      "kurtosis": -0.953
+    },
+    "MUENCHEN_precipitation": {
+      "mean": 0.262,
+      "std": 0.6,
+      "min": 0.0,
+      "max": 9.79,
+      "range": 9.79,
+      "skew": 5.206,
+      "kurtosis": 44.605
+    },
+    "MUENCHEN_sunshine": {
+      "mean": 5.22,
+      "std": 4.595,
+      "min": 0.0,
+      "max": 15.7,
+      "range": 15.7,
+      "skew": 0.45,
+      "kurtosis": -1.085
+    },
+    "MUENCHEN_temp_mean": {
+      "mean": 10.052,
+      "std": 7.903,
+      "min": -12.9,
+      "max": 29.2,
+      "range": 42.1,
+      "skew": -0.147,
+      "kurtosis": -0.764
+    },
+    "MUENCHEN_temp_min": {
+      "mean": 5.997,
+      "std": 7.056,
+      "min": -16.4,
+      "max": 22.0,
+      "range": 38.4,
+      "skew": -0.268,
+      "kurtosis": -0.555
+    },
+    "MUENCHEN_temp_max": {
+      "mean": 14.54,
+      "std": 9.17,
+      "min": -9.9,
+      "max": 37.0,
+      "range": 46.9,
+      "skew": -0.064,
+      "kurtosis": -0.876
+    },
+    "OSLO_cloud_cover": {
+      "mean": 5.608,
+      "std": 2.171,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.647,
+      "kurtosis": -0.631
+    },
+    "OSLO_wind_speed": {
+      "mean": 2.664,
+      "std": 1.364,
+      "min": 0.0,
+      "max": 11.0,
+      "range": 11.0,
+      "skew": 1.173,
+      "kurtosis": 2.403
+    },
+    "OSLO_wind_gust": {
+      "mean": 9.095,
+      "std": 3.471,
+      "min": 1.5,
+      "max": 27.3,
+      "range": 25.8,
+      "skew": 0.618,
+      "kurtosis": 0.533
+    },
+    "OSLO_humidity": {
+      "mean": 0.723,
+      "std": 0.151,
+      "min": 0.24,
+      "max": 1.0,
+      "range": 0.76,
+      "skew": -0.572,
+      "kurtosis": -0.544
+    },
+    "OSLO_pressure": {
+      "mean": 1.011,
+      "std": 0.012,
+      "min": 0.959,
+      "max": 1.051,
+      "range": 0.092,
+      "skew": -0.116,
+      "kurtosis": 0.203
+    },
+    "OSLO_global_radiation": {
+      "mean": 1.047,
+      "std": 0.979,
+      "min": 0.01,
+      "max": 3.53,
+      "range": 3.52,
+      "skew": 0.769,
+      "kurtosis": -0.653
+    },
+    "OSLO_precipitation": {
+      "mean": 0.24,
+      "std": 0.512,
+      "min": 0.0,
+      "max": 5.6,
+      "range": 5.6,
+      "skew": 3.457,
+      "kurtosis": 16.009
+    },
+    "OSLO_sunshine": {
+      "mean": 4.849,
+      "std": 4.88,
+      "min": 0.0,
+      "max": 24.0,
+      "range": 24.0,
+      "skew": 0.874,
+      "kurtosis": 0.258
+    },
+    "OSLO_temp_mean": {
+      "mean": 7.198,
+      "std": 7.991,
+      "min": -18.1,
+      "max": 25.4,
+      "range": 43.5,
+      "skew": -0.128,
+      "kurtosis": -0.733
+    },
+    "OSLO_temp_min": {
+      "mean": 3.845,
+      "std": 7.502,
+      "min": -20.7,
+      "max": 20.7,
+      "range": 41.4,
+      "skew": -0.237,
+      "kurtosis": -0.569
+    },
+    "OSLO_temp_max": {
+      "mean": 11.033,
+      "std": 9.002,
+      "min": -15.6,
+      "max": 33.0,
+      "range": 48.6,
+      "skew": -0.019,
+      "kurtosis": -0.861
+    },
+    "PERPIGNAN_wind_speed": {
+      "mean": 4.669,
+      "std": 2.651,
+      "min": 0.8,
+      "max": 16.3,
+      "range": 15.5,
+      "skew": 1.04,
+      "kurtosis": 0.488
+    },
+    "PERPIGNAN_humidity": {
+      "mean": 0.652,
+      "std": 0.149,
+      "min": 0.22,
+      "max": 0.97,
+      "range": 0.75,
+      "skew": -0.066,
+      "kurtosis": -0.792
+    },
+    "PERPIGNAN_pressure": {
+      "mean": 1.016,
+      "std": 0.007,
+      "min": 0.983,
+      "max": 1.036,
+      "range": 0.053,
+      "skew": -0.379,
+      "kurtosis": 1.132
+    },
+    "PERPIGNAN_global_radiation": {
+      "mean": 1.712,
+      "std": 0.942,
+      "min": 0.03,
+      "max": 3.66,
+      "range": 3.63,
+      "skew": 0.268,
+      "kurtosis": -1.084
+    },
+    "PERPIGNAN_precipitation": {
+      "mean": 0.151,
+      "std": 0.773,
+      "min": 0.0,
+      "max": 16.04,
+      "range": 16.04,
+      "skew": 10.781,
+      "kurtosis": 151.92
+    },
+    "PERPIGNAN_temp_mean": {
+      "mean": 16.035,
+      "std": 6.477,
+      "min": -0.6,
+      "max": 31.8,
+      "range": 32.4,
+      "skew": 0.013,
+      "kurtosis": -0.886
+    },
+    "PERPIGNAN_temp_min": {
+      "mean": 11.616,
+      "std": 6.374,
+      "min": -5.9,
+      "max": 26.3,
+      "range": 32.2,
+      "skew": -0.126,
+      "kurtosis": -0.779
+    },
+    "PERPIGNAN_temp_max": {
+      "mean": 20.455,
+      "std": 6.975,
+      "min": 1.3,
+      "max": 38.2,
+      "range": 36.9,
+      "skew": 0.056,
+      "kurtosis": -0.783
+    },
+    "ROMA_cloud_cover": {
+      "mean": 3.521,
+      "std": 2.198,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": 0.181,
+      "kurtosis": -1.016
+    },
+    "ROMA_humidity": {
+      "mean": 0.735,
+      "std": 0.121,
+      "min": 0.18,
+      "max": 0.99,
+      "range": 0.81,
+      "skew": -0.291,
+      "kurtosis": -0.245
+    },
+    "ROMA_pressure": {
+      "mean": 1.015,
+      "std": 0.007,
+      "min": 0.983,
+      "max": 1.039,
+      "range": 0.056,
+      "skew": -0.143,
+      "kurtosis": 0.89
+    },
+    "ROMA_global_radiation": {
+      "mean": 1.568,
+      "std": 0.879,
+      "min": 0.05,
+      "max": 3.33,
+      "range": 3.28,
+      "skew": 0.085,
+      "kurtosis": -1.276
+    },
+    "ROMA_sunshine": {
+      "mean": 7.162,
+      "std": 4.016,
+      "min": 0.0,
+      "max": 13.8,
+      "range": 13.8,
+      "skew": -0.419,
+      "kurtosis": -1.08
+    },
+    "ROMA_temp_mean": {
+      "mean": 16.06,
+      "std": 6.941,
+      "min": -0.7,
+      "max": 31.5,
+      "range": 32.2,
+      "skew": 0.032,
+      "kurtosis": -1.059
+    },
+    "ROMA_temp_min": {
+      "mean": 11.17,
+      "std": 6.425,
+      "min": -4.4,
+      "max": 25.0,
+      "range": 29.4,
+      "skew": -0.097,
+      "kurtosis": -0.944
+    },
+    "ROMA_temp_max": {
+      "mean": 21.103,
+      "std": 7.626,
+      "min": 0.0,
+      "max": 40.0,
+      "range": 40.0,
+      "skew": 0.086,
+      "kurtosis": -1.013
+    },
+    "SONNBLICK_cloud_cover": {
+      "mean": 5.447,
+      "std": 2.437,
+      "min": 0.0,
+      "max": 8.0,
+      "range": 8.0,
+      "skew": -0.696,
+      "kurtosis": -0.689
+    },
+    "SONNBLICK_humidity": {
+      "mean": 0.854,
+      "std": 0.175,
+      "min": 0.1,
+      "max": 1.0,
+      "range": 0.9,
+      "skew": -1.68,
+      "kurtosis": 2.176
+    },
+    "SONNBLICK_global_radiation": {
+      "mean": 1.694,
+      "std": 0.898,
+      "min": 0.17,
+      "max": 4.42,
+      "range": 4.25,
+      "skew": 0.555,
+      "kurtosis": -0.416
+    },
+    "SONNBLICK_precipitation": {
+      "mean": 0.541,
+      "std": 0.771,
+      "min": 0.0,
+      "max": 5.95,
+      "range": 5.95,
+      "skew": 1.991,
+      "kurtosis": 4.823
+    },
+    "SONNBLICK_sunshine": {
+      "mean": 4.891,
+      "std": 4.471,
+      "min": 0.0,
+      "max": 15.6,
+      "range": 15.6,
+      "skew": 0.409,
+      "kurtosis": -1.113
+    },
+    "SONNBLICK_temp_mean": {
+      "mean": -4.626,
+      "std": 6.987,
+      "min": -26.6,
+      "max": 13.8,
+      "range": 40.4,
+      "skew": -0.271,
+      "kurtosis": -0.517
+    },
+    "SONNBLICK_temp_min": {
+      "mean": -6.884,
+      "std": 7.12,
+      "min": -30.3,
+      "max": 8.7,
+      "range": 39.0,
+      "skew": -0.353,
+      "kurtosis": -0.53
+    },
+    "SONNBLICK_temp_max": {
+      "mean": -2.352,
+      "std": 6.973,
+      "min": -24.7,
+      "max": 14.3,
+      "range": 39.0,
+      "skew": -0.225,
+      "kurtosis": -0.419
+    },
+    "STOCKHOLM_cloud_cover": {
+      "mean": 5.246,
+      "std": 3.362,
+      "min": -99.0,
+      "max": 9.0,
+      "range": 108.0,
+      "skew": -16.46,
+      "kurtosis": 504.097
+    },
+    "STOCKHOLM_pressure": {
+      "mean": 1.011,
+      "std": 0.034,
+      "min": -0.099,
+      "max": 1.051,
+      "range": 1.15,
+      "skew": -29.007,
+      "kurtosis": 949.766
+    },
+    "STOCKHOLM_precipitation": {
+      "mean": 0.149,
+      "std": 0.345,
+      "min": 0.0,
+      "max": 4.3,
+      "range": 4.3,
+      "skew": 4.481,
+      "kurtosis": 29.333
+    },
+    "STOCKHOLM_sunshine": {
+      "mean": 5.101,
+      "std": 4.943,
+      "min": -1.7,
+      "max": 17.8,
+      "range": 19.5,
+      "skew": 0.675,
+      "kurtosis": -0.649
+    },
+    "STOCKHOLM_temp_mean": {
+      "mean": 8.05,
+      "std": 7.83,
+      "min": -17.0,
+      "max": 26.2,
+      "range": 43.2,
+      "skew": -0.066,
+      "kurtosis": -0.755
+    },
+    "STOCKHOLM_temp_min": {
+      "mean": 5.104,
+      "std": 7.251,
+      "min": -19.7,
+      "max": 21.2,
+      "range": 40.9,
+      "skew": -0.192,
+      "kurtosis": -0.517
+    },
+    "STOCKHOLM_temp_max": {
+      "mean": 11.471,
+      "std": 8.95,
+      "min": -14.5,
+      "max": 32.9,
+      "range": 47.4,
+      "skew": 0.06,
+      "kurtosis": -0.918
+    },
+    "TOURS_wind_speed": {
+      "mean": 3.677,
+      "std": 1.52,
+      "min": 0.7,
+      "max": 10.8,
+      "range": 10.1,
+      "skew": 0.773,
+      "kurtosis": 0.508
+    },
+    "TOURS_humidity": {
+      "mean": 0.782,
+      "std": 0.116,
+      "min": 0.33,
+      "max": 1.0,
+      "range": 0.67,
+      "skew": -0.497,
+      "kurtosis": -0.24
+    },
+    "TOURS_pressure": {
+      "mean": 1.017,
+      "std": 0.019,
+      "min": 0.0,
+      "max": 1.041,
+      "range": 1.041,
+      "skew": -42.724,
+      "kurtosis": 2297.446
+    },
+    "TOURS_global_radiation": {
+      "mean": 1.37,
+      "std": 0.926,
+      "min": 0.05,
+      "max": 3.56,
+      "range": 3.51,
+      "skew": 0.433,
+      "kurtosis": -0.952
+    },
+    "TOURS_precipitation": {
+      "mean": 0.186,
+      "std": 0.422,
+      "min": 0.0,
+      "max": 6.2,
+      "range": 6.2,
+      "skew": 4.233,
+      "kurtosis": 27.945
+    },
+    "TOURS_temp_mean": {
+      "mean": 12.206,
+      "std": 6.467,
+      "min": -6.2,
+      "max": 31.2,
+      "range": 37.4,
+      "skew": -0.084,
+      "kurtosis": -0.578
+    },
+    "TOURS_temp_min": {
+      "mean": 7.861,
+      "std": 5.692,
+      "min": -13.0,
+      "max": 22.6,
+      "range": 35.6,
+      "skew": -0.219,
+      "kurtosis": -0.557
+    },
+    "TOURS_temp_max": {
+      "mean": 16.552,
+      "std": 7.715,
+      "min": -3.1,
+      "max": 39.8,
+      "range": 42.9,
+      "skew": 0.055,
+      "kurtosis": -0.551
+    }
+  },
+  "scale_table": {
+    "temp_mean": {
+      "n": 18,
+      "min": -26.6,
+      "max": 33.1,
+      "mean": 10.3877,
+      "std": 7.1806,
+      "unit": "°C"
+    },
+    "temp_min": {
+      "n": 17,
+      "min": -30.3,
+      "max": 26.3,
+      "mean": 6.3294,
+      "std": 6.4995,
+      "unit": "°C"
+    },
+    "temp_max": {
+      "n": 18,
+      "min": -24.7,
+      "max": 41.1,
+      "mean": 14.5027,
+      "std": 8.2025,
+      "unit": "°C"
+    },
+    "humidity": {
+      "n": 16,
+      "min": 0.1,
+      "max": 1.0,
+      "mean": 0.7495,
+      "std": 0.1277,
+      "unit": "fraction"
+    },
+    "precipitation": {
+      "n": 17,
+      "min": 0.0,
+      "max": 16.04,
+      "mean": 0.2306,
+      "std": 0.5394,
+      "unit": "10 mm"
+    },
+    "global_radiation": {
+      "n": 16,
+      "min": 0.01,
+      "max": 4.42,
+      "mean": 1.3656,
+      "std": 0.9302,
+      "unit": "100 W/m2"
+    },
+    "sunshine": {
+      "n": 14,
+      "min": -1.7,
+      "max": 24.0,
+      "mean": 5.0112,
+      "std": 4.3576,
+      "unit": "0.1 h"
+    },
+    "cloud_cover": {
+      "n": 13,
+      "min": -99.0,
+      "max": 9.0,
+      "mean": 5.1344,
+      "std": 2.3516,
+      "unit": "oktas"
+    },
+    "pressure": {
+      "n": 15,
+      "min": -0.099,
+      "max": 1.0512,
+      "mean": 1.0158,
+      "std": 0.011,
+      "unit": "1000 hPa"
+    },
+    "wind_speed": {
+      "n": 12,
+      "min": 0.0,
+      "max": 16.3,
+      "mean": 3.3336,
+      "std": 1.5789,
+      "unit": "m/s"
+    },
+    "wind_gust": {
+      "n": 7,
+      "min": 1.5,
+      "max": 41.0,
+      "mean": 10.0609,
+      "std": 3.8148,
+      "unit": "m/s"
+    }
+  },
+  "range_violations": [
+    {
+      "column": "STOCKHOLM_cloud_cover",
+      "n": 3,
+      "values": [
+        -99.0,
+        9.0
+      ],
+      "dates": [
+        "20031108",
+        "20080724",
+        "20090625"
+      ]
+    },
+    {
+      "column": "STOCKHOLM_sunshine",
+      "n": 29,
+      "values": [
+        -1.7
+      ],
+      "dates": [
+        "20000326",
+        "20000731",
+        "20000831",
+        "20001029",
+        "20010325",
+        "20010331",
+        "20010430",
+        "20011028",
+        "20020331",
+        "20021027",
+        "20021231",
+        "20030131",
+        "20030330",
+        "20030430",
+        "20030531",
+        "20031026",
+        "20040104",
+        "20040121",
+        "20040328",
+        "20041031",
+        "20050327",
+        "20050929",
+        "20051030",
+        "20060326",
+        "20060731",
+        "20060831",
+        "20061029",
+        "20070325",
+        "20071028"
+      ]
+    },
+    {
+      "column": "STOCKHOLM_pressure",
+      "n": 3,
+      "values": [
+        -0.099
+      ],
+      "dates": [
+        "20000124",
+        "20070603",
+        "20071008"
+      ]
+    },
+    {
+      "column": "TOURS_pressure",
+      "n": 1,
+      "values": [
+        0.0003
+      ],
+      "dates": [
+        "20081230"
+      ]
+    },
+    {
+      "column": "HEATHROW_temp_min > HEATHROW_temp_max",
+      "n": 40,
+      "values": [
+        -3.2,
+        -3.1,
+        -2.9,
+        -2.8,
+        -2.4,
+        -2.2,
+        -2.1,
+        -1.5,
+        -1.4,
+        -1.2,
+        -1.1,
+        -1.0,
+        -0.9,
+        -0.8,
+        -0.7,
+        -0.6,
+        -0.5,
+        -0.4,
+        -0.3,
+        -0.2,
+        -0.1
+      ],
+      "dates": [
+        "20000112",
+        "20000403",
+        "20001119",
+        "20001212",
+        "20001220",
+        "20001221",
+        "20001225",
+        "20010207",
+        "20010212",
+        "20010316",
+        "20010324",
+        "20011020",
+        "20011107",
+        "20011122",
+        "20011125",
+        "20011201",
+        "20011228",
+        "20020106",
+        "20020107",
+        "20020202",
+        "20021022",
+        "20021106",
+        "20021207",
+        "20030102",
+        "20030103",
+        "20030129",
+        "20030209",
+        "20030212",
+        "20030922",
+        "20031120",
+        "20031121",
+        "20031122",
+        "20031226",
+        "20040205",
+        "20040428",
+        "20040923",
+        "20041118",
+        "20041127",
+        "20041216",
+        "20041224"
+      ]
+    },
+    {
+      "column": "ROMA_temp_min > ROMA_temp_max",
+      "n": 1,
+      "values": [
+        -1.5
+      ],
+      "dates": [
+        "20060112"
+      ]
+    }
+  ],
+  "range_violation_cells": 77,
+  "range_violation_frac": 0.000129,
+  "acf": {
+    "BASEL_temp_mean": [
+      1.0,
+      0.957,
+      0.907,
+      0.871,
+      0.846,
+      0.829,
+      0.816,
+      0.803,
+      0.79,
+      0.778,
+      0.769,
+      0.762,
+      0.757,
+      0.75,
+      0.743,
+      0.735,
+      0.728,
+      0.722,
+      0.717,
+      0.711,
+      0.705,
+      0.697,
+      0.692,
+      0.689,
+      0.687,
+      0.685,
+      0.683,
+      0.678,
+      0.673,
+      0.667,
+      0.659,
+      0.652,
+      0.645,
+      0.639,
+      0.635,
+      0.632,
+      0.629,
+      0.622,
+      0.613,
+      0.603,
+      0.595
+    ],
+    "BASEL_global_radiation": [
+      1.0,
+      0.75,
+      0.663,
+      0.639,
+      0.632,
+      0.62,
+      0.609,
+      0.614,
+      0.61,
+      0.606,
+      0.597,
+      0.597,
+      0.593,
+      0.589,
+      0.582,
+      0.578,
+      0.582,
+      0.581,
+      0.584,
+      0.583,
+      0.578,
+      0.565,
+      0.564,
+      0.556,
+      0.558,
+      0.549,
+      0.553,
+      0.542,
+      0.54,
+      0.534,
+      0.516,
+      0.514,
+      0.508,
+      0.496,
+      0.489,
+      0.486,
+      0.481,
+      0.478,
+      0.47,
+      0.459,
+      0.474
+    ],
+    "BASEL_precipitation": [
+      1.0,
+      0.211,
+      0.07,
+      0.021,
+      -0.003,
+      -0.008,
+      0.017,
+      0.031,
+      0.022,
+      0.013,
+      0.031,
+      0.024,
+      0.033,
+      0.02,
+      -0.021,
+      -0.002,
+      0.02,
+      0.031,
+      0.017,
+      0.022,
+      0.06,
+      0.047,
+      0.03,
+      0.035,
+      0.008,
+      0.02,
+      0.007,
+      0.014,
+      0.01,
+      0.02,
+      0.006,
+      0.007,
+      0.03,
+      0.007,
+      0.011,
+      -0.002,
+      0.048,
+      0.031,
+      0.041,
+      0.021,
+      0.008
+    ],
+    "BASEL_pressure": [
+      1.0,
+      0.818,
+      0.565,
+      0.405,
+      0.31,
+      0.247,
+      0.206,
+      0.179,
+      0.159,
+      0.142,
+      0.127,
+      0.114,
+      0.102,
+      0.092,
+      0.076,
+      0.058,
+      0.045,
+      0.044,
+      0.05,
+      0.059,
+      0.064,
+      0.073,
+      0.081,
+      0.087,
+      0.095,
+      0.105,
+      0.107,
+      0.103,
+      0.1,
+      0.099,
+      0.095,
+      0.086,
+      0.077,
+      0.07,
+      0.063,
+      0.054,
+      0.049,
+      0.045,
+      0.041,
+      0.039,
+      0.041
+    ]
+  },
+  "monthly_climatology": {
+    "1": {
+      "BASEL_temp_mean": 2.036,
+      "BASEL_global_radiation": 0.437,
+      "BASEL_precipitation": 0.14,
+      "BASEL_humidity": 0.796
+    },
+    "2": {
+      "BASEL_temp_mean": 3.539,
+      "BASEL_global_radiation": 0.727,
+      "BASEL_precipitation": 0.148,
+      "BASEL_humidity": 0.745
+    },
+    "3": {
+      "BASEL_temp_mean": 6.889,
+      "BASEL_global_radiation": 1.183,
+      "BASEL_precipitation": 0.211,
+      "BASEL_humidity": 0.696
+    },
+    "4": {
+      "BASEL_temp_mean": 10.75,
+      "BASEL_global_radiation": 1.701,
+      "BASEL_precipitation": 0.214,
+      "BASEL_humidity": 0.67
+    },
+    "5": {
+      "BASEL_temp_mean": 15.161,
+      "BASEL_global_radiation": 2.068,
+      "BASEL_precipitation": 0.325,
+      "BASEL_humidity": 0.706
+    },
+    "6": {
+      "BASEL_temp_mean": 18.787,
+      "BASEL_global_radiation": 2.441,
+      "BASEL_precipitation": 0.267,
+      "BASEL_humidity": 0.688
+    },
+    "7": {
+      "BASEL_temp_mean": 19.779,
+      "BASEL_global_radiation": 2.283,
+      "BASEL_precipitation": 0.292,
+      "BASEL_humidity": 0.69
+    },
+    "8": {
+      "BASEL_temp_mean": 19.395,
+      "BASEL_global_radiation": 1.949,
+      "BASEL_precipitation": 0.315,
+      "BASEL_humidity": 0.724
+    },
+    "9": {
+      "BASEL_temp_mean": 15.268,
+      "BASEL_global_radiation": 1.448,
+      "BASEL_precipitation": 0.248,
+      "BASEL_humidity": 0.772
+    },
+    "10": {
+      "BASEL_temp_mean": 11.438,
+      "BASEL_global_radiation": 0.896,
+      "BASEL_precipitation": 0.281,
+      "BASEL_humidity": 0.815
+    },
+    "11": {
+      "BASEL_temp_mean": 6.254,
+      "BASEL_global_radiation": 0.48,
+      "BASEL_precipitation": 0.206,
+      "BASEL_humidity": 0.822
+    },
+    "12": {
+      "BASEL_temp_mean": 2.579,
+      "BASEL_global_radiation": 0.327,
+      "BASEL_precipitation": 0.164,
+      "BASEL_humidity": 0.816
+    }
+  },
+  "annual_mean_basel_temp": {
+    "2000": 11.787,
+    "2001": 10.747,
+    "2002": 11.156,
+    "2003": 11.395,
+    "2004": 10.546,
+    "2005": 10.423,
+    "2006": 10.915,
+    "2007": 11.315,
+    "2008": 10.796,
+    "2009": 11.171,
+    "2010": 2.9
+  },
+  "pair_correlation": {
+    "n_pairs": 13203,
+    "mean_abs_r": 0.3,
+    "median_abs_r": 0.196,
+    "frac_abs_r_gt_0.8": 0.102,
+    "frac_abs_r_gt_0.9": 0.028,
+    "frac_abs_r_gt_0.95": 0.007,
+    "max_abs_r": 0.996,
+    "cols_in_gt0.95_pairs": 62
+  },
+  "split": {
+    "train": 2921,
+    "val": 366,
+    "test": 366
+  },
+  "baselines": {
+    "train": {
+      "persistence_y(t)->y(t+1)": {
+        "MAE": 1.68,
+        "RMSE": 2.189,
+        "R2": 0.9131,
+        "bias": -0.001
+      },
+      "train_monthly_climatology": {
+        "MAE": 3.082,
+        "RMSE": 3.824,
+        "R2": 0.7349,
+        "bias": -0.001
+      }
+    },
+    "val": {
+      "persistence_y(t)->y(t+1)": {
+        "MAE": 1.616,
+        "RMSE": 2.063,
+        "R2": 0.9114,
+        "bias": -0.003
+      },
+      "train_monthly_climatology": {
+        "MAE": 2.953,
+        "RMSE": 3.521,
+        "R2": 0.7418,
+        "bias": -0.225
+      }
+    },
+    "test": {
+      "persistence_y(t)->y(t+1)": {
+        "MAE": 1.667,
+        "RMSE": 2.188,
+        "R2": 0.9206,
+        "bias": 0.009
+      },
+      "train_monthly_climatology": {
+        "MAE": 2.662,
+        "RMSE": 3.369,
+        "R2": 0.8118,
+        "bias": 0.132
+      }
+    }
+  },
+  "persistence_test_corr": 0.9604,
+  "top_target_corr": {
+    "BASEL_temp_mean": 0.957,
+    "BASEL_temp_max": 0.947,
+    "MAASTRICHT_temp_mean": 0.943,
+    "TOURS_temp_mean": 0.941,
+    "MUENCHEN_temp_mean": 0.938,
+    "DUSSELDORF_temp_mean": 0.937,
+    "MONTELIMAR_temp_max": 0.933,
+    "TOURS_temp_max": 0.933,
+    "MAASTRICHT_temp_max": 0.932,
+    "KASSEL_temp_mean": 0.931,
+    "MONTELIMAR_temp_mean": 0.93,
+    "DUSSELDORF_temp_max": 0.929,
+    "KASSEL_temp_max": 0.924,
+    "DE_BILT_temp_mean": 0.922,
+    "MUENCHEN_temp_max": 0.922
+  },
+  "bottom_target_corr": {
+    "MAASTRICHT_humidity": -0.435,
+    "MUENCHEN_humidity": -0.436,
+    "BUDAPEST_humidity": -0.457,
+    "TOURS_humidity": -0.497,
+    "DRESDEN_humidity": -0.523
+  },
+  "seasonality": {
+    "variance_share_explained_by_monthly_cycle": 0.7442,
+    "anomaly_std_C": 3.75,
+    "anomaly_lag1_autocorr": 0.819,
+    "daily_change_lag1_autocorr": 0.075
+  },
+  "top_anomaly_corr": {
+    "BASEL_temp_mean": 0.824,
+    "MAASTRICHT_temp_mean": 0.803,
+    "BASEL_temp_max": 0.8,
+    "TOURS_temp_mean": 0.795,
+    "DUSSELDORF_temp_mean": 0.778,
+    "MUENCHEN_temp_mean": 0.759,
+    "MAASTRICHT_temp_max": 0.753,
+    "TOURS_temp_max": 0.75,
+    "KASSEL_temp_mean": 0.739,
+    "DUSSELDORF_temp_max": 0.735,
+    "MONTELIMAR_temp_max": 0.727,
+    "MUENCHEN_temp_max": 0.726,
+    "DE_BILT_temp_mean": 0.725,
+    "KASSEL_temp_max": 0.708,
+    "MAASTRICHT_temp_min": 0.7
+  },
+  "bottom_anomaly_corr": {
+    "HEATHROW_pressure": -0.273,
+    "MUENCHEN_humidity": -0.318,
+    "PERPIGNAN_wind_speed": -0.329,
+    "DRESDEN_humidity": -0.345,
+    "MONTELIMAR_wind_speed": -0.41
+  },
+  "top_change_corr": {
+    "MAASTRICHT_temp_mean": 0.397,
+    "TOURS_temp_max": 0.378,
+    "DE_BILT_temp_mean": 0.355,
+    "TOURS_temp_mean": 0.348,
+    "DUSSELDORF_temp_mean": 0.329,
+    "HEATHROW_temp_mean": 0.328,
+    "MAASTRICHT_temp_max": 0.324,
+    "DE_BILT_temp_max": 0.293
+  },
+  "bottom_change_corr": {
+    "LJUBLJANA_precipitation": -0.127,
+    "MONTELIMAR_wind_speed": -0.135,
+    "SONNBLICK_cloud_cover": -0.14,
+    "PERPIGNAN_wind_speed": -0.169,
+    "HEATHROW_pressure": -0.174
+  },
+  "picnic": {
+    "shape": [
+      3654,
+      18
+    ],
+    "n_stations": 17,
+    "missing_stations": [
+      "DE_BILT",
+      "ROMA"
+    ],
+    "positive_rate_overall": 0.2469,
+    "positive_rate_by_station": {
+      "BASEL_picnic_weather": 0.2564,
+      "BUDAPEST_picnic_weather": 0.3675,
+      "DE_picnic_weather": 0.2198,
+      "DRESDEN_picnic_weather": 0.228,
+      "DUSSELDORF_picnic_weather": 0.2291,
+      "HEATHROW_picnic_weather": 0.2378,
+      "KASSEL_picnic_weather": 0.2009,
+      "LJUBLJANA_picnic_weather": 0.3016,
+      "MAASTRICHT_picnic_weather": 0.2266,
+      "MALMO_picnic_weather": 0.2107,
+      "MONTELIMAR_picnic_weather": 0.3837,
+      "MUENCHEN_picnic_weather": 0.2296,
+      "OSLO_picnic_weather": 0.1689,
+      "PERPIGNAN_picnic_weather": 0.4847,
+      "SONNBLICK_picnic_weather": 0.0,
+      "STOCKHOLM_picnic_weather": 0.1845,
+      "TOURS_picnic_weather": 0.2674
+    },
+    "n_all_false_days": 1322,
+    "n_all_true_days": 0
+  },
+  "picnic_rate_by_month": {
+    "1": 0.0045,
+    "2": 0.0094,
+    "3": 0.0583,
+    "4": 0.2296,
+    "5": 0.4061,
+    "6": 0.5263,
+    "7": 0.5226,
+    "8": 0.5472,
+    "9": 0.4522,
+    "10": 0.1713,
+    "11": 0.0196,
+    "12": 0.0034
+  }
+}
