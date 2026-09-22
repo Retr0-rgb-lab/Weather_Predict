@@ -50,13 +50,13 @@ docs/figures/        # EDA 图表 fig01–fig09（gitignored，可由 eda.py 重
 
 这些坑全部有数据佐证，详见 `docs/data_analysis.md` §3/§5/§7 与 `docs/task_brief.md` §4.3：
 
-- **严禁随机划分**。日序数据 lag-1 自相关 0.957，shuffle 必然泄漏。唯一合法切分：**train 2000–2007（2921 天）/ val 2008（366 天）/ test 2009-01-01～2010-01-01（366 天）**；验证集用于选模型与早停。
-- **persistence 基线是必须越过的门槛**：test MAE **1.667 °C**、R² **0.9206**。任何模型必须报告相对它的提升，只报 R²≈0.9 不构成证据。气候基线：test MAE 2.662 / R² 0.8118。
+- **严禁随机划分**。日序数据 lag-1 自相关 0.957，shuffle 必然泄漏。唯一合法切分：**train 2000–2007（2922 天，Δ 对齐后 2920 样本）/ val 2008（366 天）/ test 2009-01-01～2010-01-01（366 天）**；验证集用于选模型与早停。
+- **主任务 = 日际变温 ΔT_max（2026-09-22 改向，见 task_brief §10）**：门槛基线是 zero-change（Δ 空间 persistence 恒为 0），test MAE **2.393 °C**；任何模型必须报告 skill vs zero + block bootstrap CI。（原主线"原始 T 的 persistence 基线 test MAE 1.667 / R² 0.9206"已降级为对照讨论，不再是门槛。）
 - **气候/标准化统计量只能用训练期估计**（月度气候均值、站点均值、scaler 参数），再施加到 val/test。formulation_probe.py 里的 `train_years` 写法照抄。
 - **季节循环占目标方差 74.4%**。加 day-of-year 等季节特征必须配"不加"的对照组，否则高 R² 只是日历。
 - 原始相关被季节循环灌水（随便两条温度序列 r>0.9）；论证模型价值只用**去季节化**后的相关。
 - **2010 年只有 1 天**（2010-01-01 边界日），对它做任何年度统计都无意义。
-- 测试期仅 366 天，MAE 标准误 ≈ 0.11 °C——0.1 °C 量级的"提升"是噪声，须报 bootstrap 区间或合并更长测试期。
+- 测试期仅 366 天，ΔT 尺度 MAE 标准误 ≈ 0.17 °C——0.1 量级"提升"是噪声，须报 block bootstrap CI（block=7 天）或多站合并扩展（18×366=6582 station-days）。
 - **77 个物理不可能值**（`−99`/`−0.099` 哨兵残留、`temp_min>temp_max` 等，集中於 STOCKHOLM/HEATHROW）；`STOCKHOLM_cloud_cover = −99` 落在测试期。清洗方案见 data_analysis.md §3.4，清洗本身也是要在 progress 记录的实验。
 - **量纲未标准化**（pressure≈1.0 且 std 仅 0.013，wind_gust 达 41）→ NN/KNN/SVM 必须标准化，树模型可跳过但要在报告中说明理由。
 - 列名拆分用**最长前缀匹配**，不能按第一个下划线切（`DE_BILT_x` 会退化成 `DE`；`split_column()` 已实现）。

@@ -1,7 +1,7 @@
 # Weather Prediction 任务说明
 
 > 任务来源：Ms. PAN Yubing（yubing.pan@connect.polyu.hk）课题组面试前的筛选作业
-> 文档整理日期：2026-09-19 ｜ 提交截止：**2026-09-30**
+> 文档整理日期：2026-09-19 ｜ **改向日期：2026-09-22（§10 变更日志）** ｜ 提交截止：**2026-09-30**
 > 本仓库根目录：`E:\College_Projects\Weather_Predict`
 
 ---
@@ -18,25 +18,27 @@
 | 截止 | 30 Sep |
 | 附加条件 | 只有**提交了作业**的候选人才会被安排面试；截止后统一发面试通知 |
 
-解读：这是一份"卡门槛"的筛选作业。评审重点明确写在了括号里——**problem formulation（问题如何定义）与 model（模型设计与选择）**，而非刷指标。实验结果"可选"，说明报告的逻辑完整性 > 精度数字。因此报告应把"我为什么这样定义问题、为什么选这个模型、如何避免自欺欺人的评估"讲清楚。
+解读：评审重点明确写在括号里——**problem formulation（问题如何定义）与 model（模型设计与选择）**。报告应把"我为什么这样定义问题、为什么选这个模型、如何避免自欺欺人的评估"讲清楚。本仓库已于 2026-09-22 将主线形式化为**日际变温预测 ΔT_max**（§4.1），差异化正是建立在评估诚实性之上。
 
 ---
 
 ## 2. 项目背景：这个数据集是什么
 
-数据集由 Florian Huber 等人构建，**目标是教学用途**（用于 ECML 2022 "Teaching Machine Learning" workshop），因此刻意设计成"小而真实"：单机笔记本几分钟就能训完，但任务难度可调，并且天然包含真实数据中的坑（过拟合、类别不平衡、缺失值、分布漂移）。
+（2026-09-22 注：本节数据集描述与主线无关，保持原样；数据commit仍为 `83d70ee`。）
 
-- **原始来源**：ECA&D（European Climate Assessment & Dataset）地面站点日观测，file created 22-04-2021。
+数据集由 Florian Huber 等人构建，**目标是教学用途**（ECML 2022 "Teaching Machine Learning" workshop），刻意设计成"小而真实"：单机几分钟训完，但天然包含真实数据的坑。
+
+- **原始来源**：ECA&D 地面站点日观测，file created 22-04-2021。
 - **时空范围**：18 个欧洲站点，2000-01-01 ~ 2010-01-01，共 **3654 天**。
 - **站点**：BASEL、BUDAPEST、DE_BILT、DRESDEN、DUSSELDORF、HEATHROW、KASSEL、LJUBLJANA、MAASTRICHT、MALMO、MONTELIMAR、MUENCHEN、OSLO、PERPIGNAN、ROMA、SONNBLICK、STOCKHOLM、TOURS。
-- **变量**：`temp_mean/max/min`（全站点都有）、`cloud_cover`、`wind_speed`、`wind_gust`、`humidity`、`pressure`、`global_radiation`、`precipitation`、`sunshine`（部分站点有）。
-- **上游已做的预处理**（重要，写报告时需要显式声明并讨论）：
-  - 缺失率 > 5% 的列被整列删除；缺失率 ≤ 5% 的列，缺失值（原始标记 `-9999`）**用均值填补**。作者自己在 metadata 里注明了这是对原始数据的操纵，仅出于教学目的。
-  - 单位做了"压范围"但**没有标准化**：温度 °C、风速/阵风 m/s、湿度 0~1 比例、海平面气压 ×1000 hPa、全球辐射 ×100 W/m²、降水 ×10 mm、日照 0.1 h。→ 不同特征的数值尺度差异很大，建模时是否标准化是一个需要交代的设计决策。
-  - 校验结果：当前数据中已不存在 `-9999`（0 个单元格），说明填补已完成。
-- **实操细节**：18 个站点的列**不等宽**（有的站点缺 `cloud_cover`、`sunshine`、`wind_*`）。BUDAPEST 缺 `temp_min`，因此主表共 `DATE` + `MONTH` + **163 个特征**，不是 18×11。
-- **附带的分类标签**：`weather_prediction_picnic_labels.csv` 给出 17 个站点"当天是否适合野餐"的布尔标签（无 ROMA），可用于分类任务。
-- **许可与引用**：MIT License；数据集本身要求引用 ECA&D 的 Klein Tank et al. (2002) 以及数据集作者的论文。报告中应给出引用。
+- **变量**：`temp_mean/max/min`（`temp_max` 全 18 站可得，`temp_min` 缺 BUDAPEST）、`cloud_cover`、`wind_speed`、`wind_gust`、`humidity`、`pressure`、`global_radiation`、`precipitation`、`sunshine`（部分站点有）。
+- **上游已做的预处理**（报告需显式声明并讨论）：
+  - 缺失率 > 5% 的列被整列删除；≤ 5% 的列以**均值填补**（作者注明这是对原始数据的操纵）。
+  - 单位"压范围"但**未标准化**：温度 °C、风 m/s、湿度 0~1、海平面气压 ×1000 hPa、辐射 ×100 W/m²、降水 ×10 mm、日照 0.1 h。
+  - 校验：当前数据已无 `-9999`（0 格），但 EDA 发现 **77 个物理不可能值**（哨兵残留等，见 `docs/data_analysis.md` §3.2）。
+- **主表**：`DATE` + `MONTH` + **163 个特征**（18×11 理论格子缺 35）。
+- **附带分类标签**：`weather_prediction_picnic_labels.csv`（17 站点 picnic 布尔，无 ROMA）——**主线不用**（§4.2 已否决），仅供对照讨论。
+- **许可与引用**：MIT；须引 Klein Tank et al. (2002) 与 Huber et al.
 
 ---
 
@@ -45,98 +47,104 @@
 ```
 data/
 ├── weather_prediction_dataset.csv          2.7 MB  主表 3654 × 165（DATE, MONTH, 163 features）
-├── weather_prediction_picnic_labels.csv    0.4 MB  17 站点 picnic 布尔标签，3654 行
-├── weather_prediction_dataset_map.png      1.7 MB  18 站点位置地图（报告配图可直接用）
-├── metadata.txt                            4.6 KB  上游数据说明与单位定义
-├── README_upstream.md                      6.6 KB  上游仓库 README（原文留存）
-└── LICENSE                                1.1 KB  上游 MIT License
+├── weather_prediction_picnic_labels.csv    0.4 MB  17 站点 picnic 布尔标签（主线不用）
+├── weather_prediction_dataset_map.png      1.7 MB  18 站点位置地图
+├── metadata.txt                            4.6 KB  上游字段与单位说明
+├── README_upstream.md                      6.6 KB  上游仓库 README
+└── LICENSE                                 1.1 KB  上游 MIT License
 ```
 
-（未纳入仓库：上游 `notebooks/` 下的教学示例 notebook。它们是"官方参考答案"性质的基线实现，若需要可再次从 GitHub 拉取，见第 8 节。）
+（未纳入仓库：上游 `notebooks/` 教学示例——"官方参考答案"性质，其任务选择已被本仓库否决，见 §10。）
 
 ---
 
-## 4. 问题形式化（Problem Formulation）
+## 4. 问题形式化（Problem Formulation）——主线：日际变温 ΔT_max
 
-报告的核心。给出一套可直接落笔的定义：
+### 4.1 主任务：跨站点预测 BASEL 次日最高温的日际变化
 
-### 4.1 推荐主任务：跨站点次日气温回归
+- **定义输入**：第 $t$ 天全部 18 个站点的观测向量 $x_t \in \mathbb{R}^{163}$，及工程特征（上游站 Δ、气压梯度，见 spec §2.4）
+- **预测目标**：$$y_t = \Delta T_{\max}(t+1) = T_{\max}(t+1) - T_{\max}(t)\quad (\text{BASEL})$$
+- **学习目标**：$f: \mathbb{R}^{163} \to \mathbb{R}$，最小化 $\mathbb{E}[\ell(f(x_t), y_t)]$，$\ell$ 取 Huber/MAE
+- **等价性论证（报告必写）**：若 $T_{\max}(t)$ 在输入中，预测 Δ 与预测 $T(t+1)$ 属同一假设空间；本形式化是把 **persistence 从模型手里拿走、放进评价里**——Δ 空间 persistence 恒为 0，skill 第一次有物理意义。
+- **为什么选它**：
+  1. 原始 $T$ 的 74.4% 方差是季节循环，且 R²=0.92 可被 persistence 白拿（EDA §5.3/§7.4）——"预测原始 T"展示的是日历+惯性；
+  2. 教学 notebook 主实验是原始 T / 日照，Kaggle 已有原始温度预测；ΔT 避开重复，差异化落在评估框架；
+  3. 物理对应冷暖空气平流：probe 实测上游站 Δ 特征 train 相关 TOURS 0.349 / MAASTRICHT 0.201 / DE_BILT 0.190（`docs/delta_t_probe_lead.csv`），西风带平流叙事成立；
+  4. $\Delta T_{\max}$ 用全 18 站都有的 `temp_max`，无需缺测多的列。
+- **可行性已验证**（2026-09-22，R0 probe）：ridge 全量特征 test MAE **1.867** vs zero-change 基线 **2.393**（skill **+22%**，R²=0.431）。详见 `docs/progress/2026-09-22_delta_t_formulation_decision.md`。
 
-- 定义输入：第 $t$ 天全部 18 个站点的全部观测向量 $x_t \in \mathbb{R}^{163}$
-- 预测目标：**BASEL 站点第 $t+1$ 天的 `temp_mean`**，即 $y_t = \text{BASEL\_temp\_mean}(t+1)$
-- 学习目标：$f: \mathbb{R}^{163} \to \mathbb{R}$，最小化 $\mathbb{E}[\ell(f(x_t), y_t)]$，$\ell$ 取 MSE 或 MAE
-- 为什么选它：目标变量与某个输入特征强相关（`BASEL_temp_mean(t)`），存在明确且不平凡的**持续性基线**（persistence），因此"精度"有解释力；同时任务有多站点、多物理量的输入结构，足以体现建模取舍。这也是上游教学 notebook 采用的设定，便于对标与说明。
-- 物理可解释性：跨站点的气压/辐射/湿度场含有次日气温的可预报信息，模型选择与特征重要性可以直接对照气象常识来讨论。
+### 4.2 扩展任务与已否决清单
 
-### 4.2 可选扩展任务
+**扩展（可选，按序）**：
 
 | 方向 | 定义 | 价值 |
 |---|---|---|
-| 多目标回归 | 一次预测 18 个站点的次日 `temp_mean` | 展示多任务学习 / 空间相关性建模 |
-| 月分类 | 由当日观测预测 `MONTH`（12 类） | 上游示例任务之一，考察不平衡与特征工程 |
-| picnic 二分类 | 预测某站点当日是否适合野餐 | 天然类别不平衡，适合讨论 PR-AUC、阈值选择 |
-| 多步序列预测 | 用过去 $k$ 天序列预测未来第 $h$ 天 | 可引入 LSTM / TCN / Transformer，但需注意样本量仅 3654 |
+| 多站合并 ΔT_max | 18 站 × 366 天 = 6582 station-days 联合建模 | Δ 空间站点气候偏移抵消，跨站合并第一次物理正当；缓解测试期功效 |
+| 多步长 h=1..10 | 预测 ΔT_max(t+h) | skill 衰减曲线 = 可预报性极限叙事 |
+| 次日降水发生 | 0/1 分类 | 低技能任务的诚实评估（lag-1=0.211），BSS/PR-AUC |
 
-建议：**主任务做 4.1，再补一个分类任务作为扩展**，这样报告既能体现回归建模的严谨，也能展示对不平衡问题与评估指标选择的理解。
+**已否决（2026-09-22 决策，理由进报告 discussion）**：
 
-### 4.3 评估协议（必须写清，也是最能体现功力的部分）
+| 目标 | 原因 |
+|---|---|
+| 原始 T_mean / T_max 次日回归 | persistence 污染 + Kaggle/教学 notebook 已做 |
+| 日照时长回归 | 教学 notebook 主实验 |
+| picnic / 月份分类 | 另两份教学 notebook；picnic 是"无雨且暖"的派生规则 |
+| 降水量数值回归 | 零膨胀 35–75%，篇幅内讲不清 |
 
-- **严禁随机划分**：这是日序时序数据，随机 shuffle 会造成相邻日跨 train/test 的信息泄漏。必须按时间切分（如 2000–2007 训练 / 2008 验证 / 2009–2010 测试），并说明验证集用于选模型与早停。
-- **基线对照**：至少包含
-  - Persistence：$\hat{y}_t = \text{BASEL\_temp\_mean}(t)$
-  - 气候学基线：以训练集中"同月均值"作为预测
-  - 线性模型（Ridge / Lasso）
-  - 树模型（Random Forest / Gradient Boosting）
-  - 神经网络（MLP，注意 163 维输入、3654 样本下的过拟合风险）
-- **指标**：MAE、RMSE、$R^2$。回归要求报告**相对于 persistence 基线的提升**，否则数字没有意义。
-- **必须讨论的坑**：目标自相关导致的指标虚高；均值填补对 ≤5% 缺失列引入的偏差；单位不统一对距离类模型（KNN、SVM、神经网络）的影响；单年异常天气（极端寒潮/热浪）在测试集上的影响。
+### 4.3 评估协议（红线，违反 = 报告作废）
+
+- **严禁随机划分**：日序数据 lag-1 自相关 0.957。唯一合法切分：**train 2000–2007（2922 天，Δ 对齐后 2920 样本）/ val 2008（366）/ test 2009-01-01～2010-01-01（366）**；验证集用于选模型、早停、选配置。
+- **基线阶梯**：zero-change（Δ 空间 persistence，**主门槛**，test MAE 2.393 °C）→ yesterday-Δ（预期惨败，坐实日际变化近白噪声 lag-1=0.075）→ monthly-Δ 气候（≈zero）→ Ridge/Lasso → RF/HistGBM → MLP。
+- **指标**：MAE（°C，主指标，重尾稳健）、RMSE、R²（Δ 空间≈skill vs 均值）、**skill = 1 − MAE_model/MAE_zero**、corr(Δ̂,Δ)（常数基线记 "—"）。分季节附报。
+- **不确定性**：moving block bootstrap（block=7 天 ≥ 气压记忆 3–5 天），95% CI；模型间差异用同块配对 bootstrap。
+- **泄漏控制**：清洗/填补/标准化/气候统计一律 train-only 估计再施加到 val/test；特征只用第 t 天及以前；**哨兵值（−99 等）必须先清洗再差分**，否则 Δ 特征出现 ±100 °C 假尖刺。
+- **必须讨论的坑**：ΔT 重尾（锋面过境 ±10 °C）→ MAE/Huber；冬季方差大于夏季 → 分季节报告；测试期仅 366 天 → bootstrap CI + 多站合并扩展；上游均值填补对 ≤5% 缺失列的方差压缩效应。
 
 ---
 
 ## 5. 模型设计要点（Model）
 
-报告需说明"为什么是这些模型"，建议按以下层次组织：
+按"基线→线性→树→神经网络"阶梯组织（完整定义见 spec v1.1 §2.3）：
 
-1. **物理/统计基线**：persistence 与同月气候均值 —— 界定"什么叫预测得有用"。
-2. **线性模型**：Ridge/Lasso，回答"是否线性可分信息足够"，Lasso 顺便做变量选择，可讨论哪些站点/变量被选中（可解释性）。
-3. **树集成**：Random Forest / Gradient Boosting（如 XGBoost/LightGBM），通常是最强非时序基线，特征重要性可对照气象常识。
-4. **神经网络**：MLP（BatchNorm + Dropout + EarlyStopping），说明正则化手段的必要性；若做序列扩展再用 LSTM/TCN。
-5. **可选**：多任务/多站点联合建模，或加入时间特征（day-of-year 的正弦编码）——注意这会让"预测"退化为"记忆季节性"，需在报告中明确区分并说明其合理性边界。
+1. **基线**：zero-change、yesterday-Δ、monthly-Δ 气候——界定"什么叫预测得有用"。
+2. **线性**：Ridge（全量对照）、Lasso（变量选择，系数=物理通道证据：上游 Δ、气压梯度、风/湿）。
+3. **树集成**：RandomForest / HistGBM——非线性对照，permutation importance 对照气象常识。
+4. **MLP（专门训练的主模型）**：小网格 {32}/{64,32}/{128,64}，GELU，Dropout∈{0.2,0.4}，weight decay∈{1e-4,1e-3}，Huber(δ=1×train σ_Δ)，Adam lr 1e-3，batch 64，EarlyStopping(val MAE, patience 30)，种子 {0,1,2} 报 mean±std，按 mean val MAE 选配置。定位：**容量上限对照**——相对 ridge 提升有限（~2.9k 样本 × 低 SNR）本身是结论（样本量-容量权衡），写入 discussion。
+5. **消融矩阵**：全 163 levels+Δ / 仅上游 7 站子集 / 去 Δ 特征 / 去气压梯度 / 季节特征（受控对照，默认关）/ 缺失指示特征（默认关）。
 
 ---
 
 ## 6. 交付物与提交清单
 
-- [ ] `report.pdf` —— **英文**，学术报告格式；必须包含 problem formulation 与 model；建议章节：Introduction / Dataset / Problem Formulation / Methodology / Experiments(可选) / Discussion & Limitations / Conclusion / References
-- [ ] 代码 —— 可复现（含依赖说明、随机种子、一键运行入口），与报告中的图表/数字一一对应
+- [ ] `report.pdf` —— **英文**，学术报告格式；必须包含 problem formulation 与 model；建议章节：Introduction / Dataset / Problem Formulation / Methodology / Experiments / Discussion & Limitations / Conclusion / References
+- [ ] 代码 —— 可复现（含依赖说明、随机种子、一键运行入口），与报告图表/数字一一对应
 - [ ] CV
 - [ ] 打包为 `Task Report_<YourName>.zip`
 - [ ] 邮件发送至 `yubing.pan@connect.polyu.hk`，主题 `Task Report Submission_<YourName>`
 
-**提交前自检**：ZIP 内文件能否在干净环境跑通？报告里的数字是否与代码输出一致？PDF 里是否所有图都有编号、单位、图注？是否声明了数据来源与引用？
+**提交前自检**：ZIP 内代码能否干净环境跑通？报告数字是否与代码输出一致（溯源到 docs/progress 记录）？PDF 所有图是否有编号、单位、图注？数据来源与引用是否声明？
 
 ---
 
-## 7. 时间线建议（今天 2026-09-19，剩 11 天）
+## 7. 时间线（2026-09-22 重排，R 阶段对应 spec §5 的 Wave）
 
-| 阶段 | 内容 | 建议完成 |
+| 阶段 | 内容 | 完成期限 |
 |---|---|---|
-| P0 | 数据核验、基线（persistence/线性）跑通、评估协议定稿 | 09-21 |
-| P1 | 问题形式化与报告骨架（Dataset / Formulation / Methodology 三章成文） | 09-23 |
-| P2 | 树模型 + MLP 实验、消融（是否标准化、是否加时间特征、特征子集） | 09-26 |
-| P3 | 图表定稿、报告成文、代码整理为可复现结构 | 09-28 |
-| P4 | 打包、自检、发送邮件 | **09-29**（留 1 天缓冲，勿压 09-30 当天） |
+| R0 | formulation 决策落盘 + task_brief 改向 + ΔT_max 可行性 probe（skill +22% 已确认） | 09-22 ✅ |
+| R1 | 正式数据管线（清洗→填补→差分→标准化）+ 基线表 | 09-23 |
+| R2 | Lasso 变量选择 + 特征组消融 + RF/HistGBM | 09-25 |
+| R3 | MLP 网格 + 3 种子 + 多站合并扩展 | 09-26 |
+| R4 | block bootstrap CI + 消融汇总 + 图表 | 09-27 |
+| R5 | 报告成文（骨架自 R1 起并行撰写）+ 打包自检 + 发送 | **09-29**（留 1 天缓冲） |
 
 ---
 
 ## 8. 参考与引用
 
-- 数据仓库：https://github.com/florian-huber/weather_prediction_dataset （MIT License）
+- 数据仓库：https://github.com/florian-huber/weather_prediction_dataset （MIT）
 - Zenodo 备份：https://doi.org/10.5281/zenodo.7525955
-- 上游教学 notebook（本仓库未收录，如需可拉取）：
-  `notebooks/deep_learning_regression_BASEL_tomorrow_10years.ipynb`（对应 4.1 的回归任务）、
-  `notebooks/machine_learning_classification_months.ipynb`、`notebooks/machine_learning_classification_bbq.ipynb`
-- 拉取命令：`git clone --depth 1 https://github.com/florian-huber/weather_prediction_dataset.git`
+- 上游教学 notebook（任务选择已被否决，仅参考其基线设定）：`notebooks/deep_learning_regression_BASEL_tomorrow_10years.ipynb` 等
 - 必引文献：
   - Klein Tank, A.M.G. and Coauthors, 2002. *Daily dataset of 20th-century surface air temperature and precipitation series for the European Climate Assessment.* Int. J. of Climatol., 22, 1441–1453.
   - Florian Huber, Dafne van Kuppevelt, Peter Steinbach, Colin Sauze, Yang Liu, Berend Weel. *Will the sun shine? – An accessible dataset for teaching machine learning and deep learning.*
@@ -145,8 +153,19 @@ data/
 
 ## 9. 风险与待确认
 
-1. **命名占位符**：ZIP 与邮件主题中的 `YourName` 需替换为实际姓名（与 CV 一致，建议 `Task Report_<GivenName FamilyName>`）。
-2. **报告语言**：邮件用英文，报告建议英文；若考虑中文可先与 Ms. PAN 确认。
-3. **时长与篇幅**：邮件未规定页数。建议 8–12 页（含图表与参考文献），重点篇幅给 formulation 与 methodology。
-4. **是否需要实验**：写的是 optional。但"模型"章节若无任何数值支撑会显得空泛，建议至少给出 §4.3 的基线与主模型对照表。
-5. **数据版本**：本仓库数据取自主仓库 `main` 分支，克隆于 2026-09-19，commit `83d70ee054d538ec3700948367b921c0f6a08874`，与 Zenodo 版一致；报告中可标注该版本以保证可复现。
+1. **低 R² 被误读**：ΔT 的 R² 天花板由大气可预报性决定（日际变化 lag-1=0.075），报告须预设"可预报比例"叙事，全部数字用 skill vs zero + CI 呈现。
+2. **样本量-容量权衡**：~2.9k 训练样本下 MLP 过拟合是主要风险——小网格、early stopping、3 种子、val 裁决；负结果是合法结论。
+3. **测试期功效**：366 天、MAE 标准误 ≈ 0.17 °C（ΔT 尺度）；0.1 量级"提升"须 bootstrap CI 佐证；多站合并扩展可翻倍功效。
+4. **Kaggle 重叠待核**：`bernie21/temperature-prediction` 的具体内容未核实（网络受限）；即使做过原始 T，本工作差异化在 Δ 空间评估框架 + 平流通道物理解释。建议提交前再确认。
+5. **命名/语言/篇幅**：`YourName` 与 CV 一致；报告英文；建议 8–12 页，重心给 formulation 与 methodology。
+6. **排期零冗余**：任何阶段 overrun 都吃掉 09-30 缓冲——按 R1→R4 从后往前砍单（见 progress 记录 §3.2）。
+
+---
+
+## 10. 变更日志
+
+- **2026-09-22 主线改向**：主任务由"原始 BASEL_temp_mean(t+1) 回归"（原 §4.1）改为"**日际变温 ΔT_max(t+1) 预测**"。理由：原始 T 被 persistence 与季节循环污染（74.4% 方差是日历）、教学 notebook 与 Kaggle 已覆盖；Δ 空间 skill 第一次有物理意义，且上游站平流信号已被 R0 probe 证实。已否决日照/picnic/月份/原始气温/降水量数值，保留降水发生为 extension。
+  - 决策全记录：`docs/progress/2026-09-22_delta_t_formulation_decision.md`
+  - 工程 spec（oracle 审查 v1.1）：`docs/superpowers/specs/2026-09-22-delta-t-max-spec.md`
+  - R0 probe：`analysis/delta_t_probe.py` → `docs/delta_t_probe.csv` / `docs/delta_t_probe_lead.csv`
+  - 注意：§2/§3 中数据集事实与 163 特征描述对 formulation 无关，保持原样；`temp_min` 缺 BUDAPEST 不影响主线（用 `temp_max`，18/18 站可得）。
