@@ -21,12 +21,12 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from .features import pressure_gradients
+from .features import pressure_gradients, season_features
 
 
 @dataclass
 class DeltaMaxData:
-    X: dict[str, np.ndarray]          # feature blocks: levels, deltas, grads
+    X: dict[str, np.ndarray]          # feature blocks: levels, deltas, grads, season, missings
     y: np.ndarray                     # (n,) target day-over-day change
     dates: np.ndarray                 # (n,) target dates (datetime64)
     tgt_month: np.ndarray             # (n,) month of target date
@@ -47,6 +47,7 @@ def make_delta_max_dataset(
     upstream: list[str],
     target_station: str = "BASEL",
     target_var: str = "temp_max",
+    missing_ind: pd.DataFrame | None = None,
 ) -> DeltaMaxData:
     A = imputed[feature_cols].to_numpy(dtype=float)
     j = feature_cols.index(f"{target_station}_{target_var}")
@@ -68,6 +69,14 @@ def make_delta_max_dataset(
     )
     grads = grads_df.to_numpy(dtype=float)[t]
 
+    season = season_features(dates)[t]
+
+    X: dict[str, np.ndarray] = {
+        "levels": levels, "deltas": deltas, "grads": grads, "season": season,
+    }
+    if missing_ind is not None:
+        X["missings"] = missing_ind[feature_cols].to_numpy(dtype=float)[t]
+
     tr = tgt_dates < np.datetime64("2008-01-01")
     va = (tgt_dates >= np.datetime64("2008-01-01")) & (tgt_dates < np.datetime64("2009-01-01"))
     te = tgt_dates >= np.datetime64("2009-01-01")
@@ -75,7 +84,7 @@ def make_delta_max_dataset(
     up_cols = [feature_cols.index(f"{s}_{target_var}") for s in upstream]
 
     return DeltaMaxData(
-        X={"levels": levels, "deltas": deltas, "grads": grads},
+        X=X,
         y=y,
         dates=tgt_dates,
         tgt_month=tgt_month,
