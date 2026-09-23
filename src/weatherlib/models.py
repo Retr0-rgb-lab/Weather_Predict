@@ -29,18 +29,25 @@ DEFAULT_SEED = 0
 
 @dataclass
 class Fitted:
-    """A trained torch model plus its train-only standardizer."""
+    """A trained torch model plus its train-only standardizer.
+
+    y is de-standardized in predict() when y_mean/y_std are set (MLP trains on
+    a standardized target; linear models set bias internally and leave these 0/1).
+    """
 
     net: nn.Module
     mean: np.ndarray
     std: np.ndarray
     info: dict
+    y_mean: float = 0.0
+    y_std: float = 1.0
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         Xs = torch.tensor((X - self.mean) / self.std, dtype=torch.float32)
         self.net.eval()
         with torch.no_grad():
-            return self.net(Xs).squeeze(1).numpy()
+            out = self.net(Xs).squeeze(1).numpy()
+        return out * self.y_std + self.y_mean
 
 
 def _ridge_solve(Xt: torch.Tensor, yt: torch.Tensor, alpha: float) -> torch.Tensor:
@@ -78,6 +85,92 @@ def _l1_grad(
             loss.backward()
             opt.step()
     return w.detach()
+
+
+def _build_mlp(d: int, hidden: tuple[int, ...], dropout: float) -> nn.Module:
+    layers: list[nn.Module] = []
+    in_dim = d
+    for h in hidden:
+        layers.append(nn.Linear(in_dim, h))
+        layers.append(nn.GELU())
+        layers.append(nn.Dropout(dropout))
+        in_dim = h
+    layers.append(nn.Linear(in_dim, 1))
+    return nn.Sequential(*layers)
+
+
+def fit_mlp(
+    Xtr: np.ndarray,
+    ytr: np.ndarray,
+    Xva: np.ndarray,
+    yva: np.ndarray,
+    hidden: tuple[int, ...] = (64, 32),
+    dropout: float = 0.3,
+    wd: float = 1e-4,
+    lr: float = 1e-3,
+    batch: int = 64,
+    epochs: int = 300,
+    patience: int = 30,
+    loss: str = "huber",
+    seed: int = DEFAULT_SEED,
+    device: str | None = None,
+) -> Fitted:
+    """Small MLP with GELU + Dropout, Huber loss on a train-standardized target.
+
+    Early stopping on val MAE (raw degrees C), best weights restored.
+    Returns a CPU model; predict() is device-agnostic.
+    """
+    dev = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+    mean = Xtr.mean(0)
+    std = Xtr.std(0)
+    std[std == 0] = 1.0
+    Xs_tr = torch.tensor((Xtr - mean) / std, dtype=torch.float32)
+    Xs_va = torch.tensor((Xva - mean) / std, dtype=torch.float32)
+    y_mean = float(ytr.mean())
+    y_std = float(ytr.std())
+    ys_tr = torch.tensor((ytr - y_mean) / y_std, dtype=torch.float32)
+    ys_va = torch.tensor((yva - y_mean) / y_std, dtype=torch.float32)
+
+    torch.manual_seed(seed)
+    net = _build_mlp(Xtr.shape[1], hidden, dropout).to(dev)
+    opt = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=wd)
+    lossf = nn.HuberLoss(delta=1.0) if loss == "huber" else nn.MSELoss()
+
+    loader = torch.utils.data.DataLoader(
+        torch.utils.data.TensorDataset(Xs_tr.to(dev), ys_tr.to(dev)),
+        batch_size=batch, shuffle=True, generator=torch.Generator().manual_seed(seed),
+    )
+    Xv, yv = Xs_va.to(dev), ys_va.to(dev)
+
+    def val_mae() -> float:
+        net.eval()
+        with torch.no_grad():
+            pred = (net(Xv).squeeze(1) * y_std + y_mean).cpu().numpy()
+        return float(np.mean(np.abs(pred - yva)))
+
+    best_mae = np.inf
+    best_epoch, best_state, stall = 0, None, 0
+    for ep in range(epochs):
+        net.train()
+        for xb, yb in loader:
+            opt.zero_grad()
+            lossv = lossf(net(xb).squeeze(1), yb)
+            lossv.backward()
+            opt.step()
+        vm = val_mae()
+        if vm < best_mae:
+            best_mae, best_epoch, stall = vm, ep, 0
+            best_state = {k: v.clone() for k, v in net.state_dict().items()}
+        else:
+            stall += 1
+            if stall >= patience:
+                break
+    net.load_state_dict(best_state)
+    return Fitted(
+        net=net.to("cpu"), mean=mean, std=std, y_mean=y_mean, y_std=y_std,
+        info={"hidden": hidden, "dropout": dropout, "wd": wd, "seed": seed,
+              "loss": loss, "val_mae": best_mae, "best_epoch": best_epoch},
+    )
 
 
 def fit_linear(
