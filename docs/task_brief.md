@@ -105,13 +105,12 @@ data/
 
 ## 5. 模型设计要点（Model）
 
-按"基线→线性→树→神经网络"阶梯组织（完整定义见 spec v1.1 §2.3）：
+按"基线→线性→MLP"阶梯组织，**100% PyTorch**（2026-09-22 框架决策，砍掉树模型；完整定义见 spec v1.2 §2.3）：
 
 1. **基线**：zero-change、yesterday-Δ、monthly-Δ 气候——界定"什么叫预测得有用"。
-2. **线性**：Ridge（全量对照）、Lasso（变量选择，系数=物理通道证据：上游 Δ、气压梯度、风/湿）。
-3. **树集成**：RandomForest / HistGBM——非线性对照，permutation importance 对照气象常识。
-4. **MLP（专门训练的主模型）**：小网格 {32}/{64,32}/{128,64}，GELU，Dropout∈{0.2,0.4}，weight decay∈{1e-4,1e-3}，Huber(δ=1×train σ_Δ)，Adam lr 1e-3，batch 64，EarlyStopping(val MAE, patience 30)，种子 {0,1,2} 报 mean±std，按 mean val MAE 选配置。定位：**容量上限对照**——相对 ridge 提升有限（~2.9k 样本 × 低 SNR）本身是结论（样本量-容量权衡），写入 discussion。
-5. **消融矩阵**：全 163 levels+Δ / 仅上游 7 站子集 / 去 Δ 特征 / 去气压梯度 / 季节特征（受控对照，默认关）/ 缺失指示特征（默认关）。
+2. **线性（torch）**：L2 封闭解 Ridge（`torch.linalg.solve`，瞬时且精确）+ L1 Lasso（梯度，R2）。**α 用 val 2008 选择**（替代 sklearn 内部 CV，符合"无时间洗牌"协议）。系数即物理通道证据（上游 Δ、气压梯度、风/湿）。
+3. **MLP（专门训练的主模型）**：小网格 {32}/{64,32}/{128,64}，GELU，Dropout∈{0.2,0.4}，weight decay∈{1e-4,1e-3}，Huber(δ=1×train σ_Δ)，Adam lr 1e-3，batch 64，EarlyStopping(val MAE, patience 30)，种子 {0,1,2} 报 mean±std，按 mean val MAE 选配置；CUDA 可用。定位：**容量上限对照**——相对线性提升有限（~2.9k 样本 × 低 SNR）本身是结论（样本量-容量权衡），写入 discussion。
+4. **消融矩阵**：全 163 levels+Δ / 仅上游 7 站子集 / 去 Δ 特征 / 去气压梯度 / 季节特征（受控对照，默认关）/ 缺失指示特征（默认关）。
 
 ---
 
@@ -133,7 +132,7 @@ data/
 |---|---|---|
 | R0 | formulation 决策落盘 + task_brief 改向 + ΔT_max 可行性 probe（skill +22% 已确认） | 09-22 ✅ |
 | R1 | 正式数据管线（清洗→填补→差分→标准化）+ 基线表 | 09-23 |
-| R2 | Lasso 变量选择 + 特征组消融 + RF/HistGBM | 09-25 |
+| R2 | Lasso(torch) 变量选择 + 特征组消融成表 | 09-25 |
 | R3 | MLP 网格 + 3 种子 + 多站合并扩展 | 09-26 |
 | R4 | block bootstrap CI + 消融汇总 + 图表 | 09-27 |
 | R5 | 报告成文（骨架自 R1 起并行撰写）+ 打包自检 + 发送 | **09-29**（留 1 天缓冲） |
@@ -164,6 +163,7 @@ data/
 
 ## 10. 变更日志
 
+- **2026-09-22 框架决策**：建模 100% PyTorch，砍掉树模型；运行时 = Windows Python 3.12（`D:\Program Files\Pythons\python3.12`，torch 2.13+cu126）。线性 L2 用封闭解、α 用 val 2008 选择。R1 复算：linear_lvl+d_all163 test MAE **1.827**（sklearn 为 1.851）。记录：`docs/progress/2026-09-22_framework_decision_torch.md`。
 - **2026-09-22 主线改向**：主任务由"原始 BASEL_temp_mean(t+1) 回归"（原 §4.1）改为"**日际变温 ΔT_max(t+1) 预测**"。理由：原始 T 被 persistence 与季节循环污染（74.4% 方差是日历）、教学 notebook 与 Kaggle 已覆盖；Δ 空间 skill 第一次有物理意义，且上游站平流信号已被 R0 probe 证实。已否决日照/picnic/月份/原始气温/降水量数值，保留降水发生为 extension。
   - 决策全记录：`docs/progress/2026-09-22_delta_t_formulation_decision.md`
   - 工程 spec（oracle 审查 v1.1）：`docs/superpowers/specs/2026-09-22-delta-t-max-spec.md`

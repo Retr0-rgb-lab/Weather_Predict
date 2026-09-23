@@ -35,15 +35,17 @@ docs/figures/        # EDA 图表 fig01–fig09（gitignored，可由 eda.py 重
 
 ## 2. 环境与运行命令（最容易踩的坑）
 
-- **系统 Python（3.14）没有装 pandas/numpy/sklearn/matplotlib/torch，也不要全局 pip install。** 一律用 `uv`（已装 0.11.3）拉起隔离环境：
+- **模型与分析运行时 = Windows Python 3.12**（位于 `D:\Program Files\Pythons\python3.12\`，WSL 内经 `/mnt/d/Program Files/Pythons/python3.12/python.exe` 调用）：含 torch 2.13+cu126（**CUDA 可用**）、numpy 2.4、pandas 3.0、sklearn 1.8、matplotlib 3.10、scipy 1.17。所有脚本都用它跑：
   ```bash
-  # EDA（重新生成 docs/data_analysis.md 全部数字与图）
-  uv run --no-project --with pandas --with numpy --with matplotlib python analysis/eda.py
-
-  # formulation 探针（需 sklearn）
-  uv run --no-project --with pandas --with numpy --with scikit-learn python analysis/formulation_probe.py
+  PY="/mnt/d/Program Files/Pythons/python3.12/python.exe"
+  "$PY" analysis/r1_baselines.py        # R1 基线表（当前实验）
+  "$PY" analysis/eda.py                 # EDA（重新生成 docs/data_analysis.md 全部数字与图）
+  "$PY" analysis/formulation_probe.py   # formulation 探针（历史脚本）
+  "$PY" src/weatherlib/_smoke.py        # 管线冒烟
   ```
-- 新增依赖时按同样模式 `--with <pkg>` 追加，并把完整命令写进脚本的 module docstring 和 progress 记录。
+- **不要**用 `uv run --with ...` 或全局 pip install（旧文档里的 uv 命令已废弃；系统 Python 3.14 无包）。
+- pandas 是 **3.0**（Copy-on-Write 默认开启）：`clean()` 已先 `astype(float)` 再置 NaN，别再写就地整列赋 NaN 的旧式代码。
+- **建模 100% PyTorch**（2026-09-22 决策，见 `docs/progress/2026-09-22_framework_decision_torch.md`）：线性 L2 走 `torch.linalg.solve` 封闭解（秒级、精确），α 用 val 2008 选；MLP 走梯度训练（R3）。
 - 无 pyproject/requirements.txt；report 交付前需整理出依赖说明与一键运行入口（task_brief §6）。
 
 ## 3. 科学红线（评估协议，违反 = 报告作废）

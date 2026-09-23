@@ -1,4 +1,4 @@
-# ΔT_max 日际变温预测 — Spec v1.1
+# ΔT_max 日际变温预测 — Spec v1.2
 
 > 日期: 2026-09-22
 > 依据: docs/data_analysis.md §5.3/§7.3、docs/formulation_probe_horizons.csv、AGENTS.md §0、docs/progress/2026-09-22_delta_t_formulation_decision.md（同批落盘）
@@ -9,7 +9,7 @@
 
 ## 摘要
 
-主线问题从"原始次日气温"改为**日际变温** ΔT_max(t+1) = T_max(t+1) − T_max(t)（BASEL 为主目标站）。原始 T 的预测被 persistence 与季节循环污染（74.4% 方差是日历），Δ 空间 persistence≡0，skill 第一次有物理意义。探针数据已证可行性（temp_mean 距平空间 h=1：全特征 ridge 1.807 vs persistence 2.288 vs 零基线 3.378 °C RMSE）。模型采用"基线→线性→树→MLP"阶梯，MLP 为专门训练的小模型（64→32，重正则），定位为容量上限对照；评估以 MAE + skill-vs-zero + block bootstrap CI 为核心。产出为英文报告（评审核心 = formulation + model），截止 2026-09-30。
+主线问题从"原始次日气温"改为**日际变温** ΔT_max(t+1) = T_max(t+1) − T_max(t)（BASEL 为主目标站）。原始 T 的预测被 persistence 与季节循环污染（74.4% 方差是日历），Δ 空间 persistence≡0，skill 第一次有物理意义。探针数据已证可行性（temp_mean 距平空间 h=1：全特征 ridge 1.807 vs persistence 2.288 vs 零基线 3.378 °C RMSE）。模型采用"基线→线性→MLP"阶梯（**100% PyTorch**，2026-09-22 决策砍掉树模型，见 docs/progress/2026-09-22_framework_decision_torch.md），MLP 为专门训练的小模型（64→32，重正则），定位为容量上限对照；评估以 MAE + skill-vs-zero + block bootstrap CI 为核心。产出为英文报告（评审核心 = formulation + model），截止 2026-09-30。
 
 ## 0. 前置依赖
 
@@ -46,7 +46,7 @@
 ### 2.2 评估协议（红线，违反 = 作废）
 
 1. **时间切分**：train 2000–2007（2922 天，对齐后 2920 样本）/ val 2008（366 天）/ test 2009-01-01～2010-01-01（366 天）。严禁 shuffle。
-2. **基线**：zero-change（Δ 空间 persistence，主门槛）→ yesterday-Δ（预期惨败，坐实 lag-1=0.075）→ monthly-Δ 气候（≈0）→ Ridge/Lasso → RF/HistGBM → MLP。
+2. **基线**：zero-change（Δ 空间 persistence，主门槛）→ yesterday-Δ（预期惨败，坐实 lag-1=0.075）→ monthly-Δ 气候（≈0）→ 线性（torch）→ MLP。
 3. **指标**：MAE（°C，主指标，重尾稳健）、RMSE、R²（Δ 空间≈skill vs 均值）、skill = 1 − MAE_model/MAE_zero、corr(Δ̂, Δ)（zero/月气候基线预测近常数，corr 无定义，记 —）。分季节附报。
 4. **不确定性**：moving block bootstrap（block=7 天 ≥ 气压记忆 3–5 天），1000 次，95% 分位 CI；模型间差异用同块配对 bootstrap。
 5. **泄漏控制**：清洗/填补/标准化/气候统计一律 train-only 估计再施加到 val/test；特征只用第 t 天及以前。
@@ -55,8 +55,8 @@
 ### 2.3 模型阶梯与方法选择（回答四个问题）
 
 1. **专门训一个模型吗？** 是。MLP 为专门自研小模型（无预训练模型适用于此表格任务），但定位为**容量上限对照**：先验预期是相对 ridge 提升有限（~2.9k 训练样本 × 低信噪比），"提升有限"本身是结论（样本量-容量权衡），写入 discussion。
-2. **什么模型？** 阶梯：Zero / Yesterday-Δ / Monthly-Δ → Ridge、Lasso（变量选择，物理通道证据）→ RandomForest、HistGBM（非线性对照，permutation importance）→ MLP（主模型）→ 扩展：多站合并 ridge/MLP。
-3. **MLP 结构**：输入标准化；隐藏层网格 {32} / {64,32} / {128,64}，GELU，Dropout ∈ {0.2,0.4}，weight decay ∈ {1e-4,1e-3}，Huber(δ = 1 × train σ_Δ；目标按 train σ_Δ 标准化后 δ 取 1，等价于原始尺度 1 个 σ_Δ)，Adam lr 1e-3，batch 64，EarlyStopping(val MAE, patience 30, max 300 epochs)，种子 {0,1,2} 报 mean±std；按 mean val MAE 选配置。理由：~2.9k 训练样本、低 SNR，过拟合是主要风险，容量由 val 集裁决。
+2. **什么模型？** 阶梯：Zero / Yesterday-Δ / Monthly-Δ → 线性（torch：L2 封闭解 Ridge + L1 Lasso，α 用 val 2008 选，系数=物理通道证据）→ MLP（主模型）→ 扩展：多站合并线性/MLP。
+3. **MLP 结构**（torch, CUDA 可用）：输入标准化；隐藏层网格 {32} / {64,32} / {128,64}，GELU，Dropout ∈ {0.2,0.4}，weight decay ∈ {1e-4,1e-3}，Huber(δ = 1 × train σ_Δ；目标按 train σ_Δ 标准化后 δ 取 1，等价于原始尺度 1 个 σ_Δ)，Adam lr 1e-3，batch 64，EarlyStopping(val MAE, patience 30, max 300 epochs)，种子 {0,1,2} 报 mean±std；按 mean val MAE 选配置。理由：~2.9k 训练样本、低 SNR，过拟合是主要风险，容量由 val 集裁决。
 4. **其他方法怎么开展？** 统一协议（同一切分/管线/指标/种子），每模型一节：动机→配置→结果→消融或解释。消融矩阵：全 163 levels+Δ / 仅上游子集 / 去 Δ 特征 / 去气压梯度 / 季节特征（受控对照，默认关）。
 
 ### 2.4 数据管线
@@ -92,7 +92,7 @@ data/weather_prediction_dataset.csv
    ▼                       │
 Δ 上游特征 + 气压梯度 ─────┤
    │                       ▼
-   └──► Zero/Yday-Δ/ClimΔ → Ridge/Lasso → RF/HistGBM → MLP(64→32, Huber, ES)
+   └──► Zero/Yday-Δ/ClimΔ → 线性(torch: L2封闭解/L1) → MLP(64→32, Huber, ES)
                                │
                                ▼
               test: MAE/RMSE/R²/skill-vs-zero + block-CI(7d) + 分季节
@@ -107,7 +107,7 @@ data/weather_prediction_dataset.csv
 |---|---|---|---|---|
 | **Wave 1（本会话，单执行者顺序执行）** | Plan A: probe 脚本+运行+记录；Plan B: task_brief 改向 + 决策记录 | 无 | 0.5d | 09-22 |
 | Wave 2 | R1: 正式管线 src/data_pipeline.py + 基线表（zero/yday/climΔ/ridge 全量/子集） | Wave 1 | 1d | 09-23 |
-| Wave 3 | R2: Lasso 变量选择 + 特征组消融 + RF/HistGBM | Wave 2 | 1.5d | 09-25 |
+| Wave 3 | R2: Lasso(torch) 变量选择 + 特征组消融成表 | Wave 2 | 1.5d | 09-25 |
 | Wave 4 | R3: MLP 网格 + 3 种子 + 多站合并扩展 | Wave 2 | 1.5d | 09-26 |
 | Wave 5 | R4: block bootstrap CI + 消融汇总 + 图表 | Wave 3,4 | 1d | 09-27 |
 | Wave 6 | R5: 报告成文 + 打包自检发送 | Wave 5 | 1.5d | 09-29 |
@@ -134,3 +134,4 @@ Wave 2–6 进入时各自生成 plan 文件；本 spec 的 Wave 1 计划见 pla
 
 - v1.0 (2026-09-22): 初稿，待 oracle 审查。
 - v1.1 (2026-09-22): oracle APPROVE-WITH-MINOR（P0=0）。修正：Huber δ 表述钉死（P1-1）；§2.4 显式声明缺失指示特征默认不加（P1-2）；corr 对近常数基线记 —（P2-3）；train 天数 2921→2922/对齐 2920（P2-1，EDA/AGENTS 照抄的 off-by-one 一并修正）；站表第 7/8 位与末位表述（P2-2）；3654→~2.9k 训练样本口径（P2-4）；排期零冗余，报告骨架从 Wave 2 起并行成文（P2-6）。
+- v1.2 (2026-09-22): 框架决策——**100% PyTorch，砍掉树模型**（用户选择，见 progress 决策记录）。线性 α 改用 val 2008 选择（替代 sklearn 内部 CV，更贴合无时间洗牌协议）；运行时切到 Windows Python 3.12（torch 2.13+cu126）。R1 用 torch 封闭解复算：linear_lvl+d_all163 test MAE 1.827（sklearn 为 1.851，val 选出 α=178 更重正则）。

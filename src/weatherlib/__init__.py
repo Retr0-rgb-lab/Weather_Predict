@@ -29,7 +29,7 @@ from .metrics import (
     skill,
 )
 from .baselines import monthly_delta_clim, yesterday_delta, zero
-from .models import fit_lasso, fit_ridge
+from .models import Fitted, fit_linear
 
 __all__ = [
     "ROOT", "DATA", "STATIONS", "UPSTREAM", "TARGET_STATION", "TARGET_VAR",
@@ -39,5 +39,5 @@ __all__ = [
     "mae", "rmse", "r2", "corr_safe", "skill", "block_bootstrap_ci",
     "block_bootstrap_diff_ci",
     "zero", "yesterday_delta", "monthly_delta_clim",
-    "fit_ridge", "fit_lasso",
+    "fit_linear", "Fitted",
 ]

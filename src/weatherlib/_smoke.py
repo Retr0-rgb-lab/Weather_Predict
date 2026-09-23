@@ -6,7 +6,7 @@ through the shared library (src/weatherlib), which upgrades the probe:
 - features:   adds pressure gradients P_upstream - P_BASEL
 - metrics:    adds moving-block bootstrap CI (block=7d) on test MAE
 
-Run:  uv run --no-project --with pandas --with numpy --with scikit-learn python src/weatherlib/_smoke.py
+Run:  "/mnt/d/Program Files/Pythons/python3.12/python.exe" src/weatherlib/_smoke.py
 """
 
 from __future__ import annotations
@@ -45,11 +45,11 @@ def main() -> None:
         mae_test = wl.mae(d.y[d.te], pred[d.te])
         print(f"[baseline] {name:<16} test MAE {mae_test:.3f}")
 
-    # ridge on full levels+deltas (probe headline was ~1.859)
+    # linear (torch) on full levels+deltas (sklearn ridge was ~1.851)
     X = np.hstack([d.X["levels"], d.X["deltas"]])
-    model = wl.fit_ridge(X[d.tr], d.y[d.tr])
-    yp = model.predict(X[d.te])
-    print("ridge lvl+d all163 test MAE %.3f  RMSE %.3f  R2 %.3f" % (
+    fitted = wl.fit_linear(X[d.tr], d.y[d.tr], X[d.va], d.y[d.va])
+    yp = fitted.predict(X[d.te])
+    print("linear lvl+d all163 test MAE %.3f  RMSE %.3f  R2 %.3f" % (
         wl.mae(d.y[d.te], yp), wl.rmse(d.y[d.te], yp), wl.r2(d.y[d.te], yp)))
 
 

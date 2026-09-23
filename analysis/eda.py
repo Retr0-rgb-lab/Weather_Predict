@@ -1,7 +1,7 @@
 """Exploratory data analysis for the weather prediction dataset.
 
 Generates every number and figure quoted in `docs/data_analysis.md`.
-Run:  uv run --no-project --with pandas --with numpy --with matplotlib python analysis/eda.py
+Run:  "/mnt/d/Program Files/Pythons/python3.12/python.exe" analysis/eda.py
 """
 
 from __future__ import annotations

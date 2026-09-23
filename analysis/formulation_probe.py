@@ -7,7 +7,7 @@ y(t+h) sits in (a) the target station's own past (temporal memory) versus
 Anomalies are computed against a climatology fitted on 2000-2007 only, so no
 test-period information leaks into the features or the targets.
 
-Run:  uv run --no-project --with pandas --with numpy --with scikit-learn python analysis/formulation_probe.py
+Run:  "/mnt/d/Program Files/Pythons/python3.12/python.exe" analysis/formulation_probe.py
 """
 
 from __future__ import annotations
