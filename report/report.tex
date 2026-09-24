@@ -1,0 +1,375 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,urlcolor=blue!55!black]{hyperref}
+
+\newcommand{\dmax}{\Delta T_{\max}}
+\newcommand{\tc}{\ensuremath{^{\circ}\mathrm{C}}}
+
+\title{\bfseries Predicting Day-to-Day Temperature Change Rather Than Temperature:\\
+An Evaluation-First Reformulation\\for a Multi-Station European Weather Dataset}
+\author{Huang Haoran}
+\date{September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Forecasts of next-day near-surface temperature on dense station datasets can look excellent for the wrong reason: day-to-day persistence and the annual cycle together explain over 90\% of the variance of raw temperature series, so a model inherits their skill without learning any meteorology. We reformulate the prediction task for a public European multi-station dataset (18 stations, 2000--2010, 163 features) as forecasting the \emph{day-to-day change} in daily maximum temperature, $\dmax(t{+}1) = T_{\max}(t{+}1) - T_{\max}(t)$, at Basel. In this target space the persistence forecast is identically zero, so skill against the zero-change baseline measures meteorological learning rather than calendar knowledge. We fit a ladder of models---three naive baselines, closed-form ridge and $L_1$-regularised least squares, and a small MLP---under a strictly chronological split (train 2000--2007, validation 2008, test 2009) with training-only preprocessing statistics and moving-block bootstrap uncertainty (7-day blocks). All learned models beat the zero-change baseline (test MAE 2.393\tc) significantly: ridge 1.827\tc{} (+23.7\% skill), Lasso 1.773\tc{} (+25.9\%), MLP ensemble 1.751\tc{} (+26.9\%); differences among the learned models lie within bootstrap noise. Ablations show the signal is distributed rather than concentrated in a few predictors, is carried by the pressure field and upstream-station changes consistent with mid-latitude advection, and vanishes when only the target station's own observations are available. Pooling all 18 stations into one global model underperforms 18 independent models by 0.36\tc{} MAE, a negative result that bounds the value of shared representations at this sample size.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Public weather datasets invite an apparently easy benchmark: predict tomorrow's temperature from today's observations across many stations. On the dataset used here---daily station observations from 18 European locations over eleven years---the naive rule ``tomorrow equals today'' reaches a test MAE of 1.667\tc{} with $R^2 = 0.9206$ against the raw daily mean temperature. A further 74.4\% of that series' variance is explained by the monthly climatology alone. Any regression model, however trivial, therefore posts high accuracy on the raw target, and the number certifies the calendar and the persistence of the atmosphere rather than the model.
+
+This report treats the gap between apparent and actual skill as the object of study. We reformulate the task so that the trivial forecasts become worthless by construction, then ask what residual signal, if any, machine-learning models can extract. The reformulated target is the \emph{day-to-day change} in daily maximum temperature at Basel, $\dmax(t{+}1)$. In this space the persistence forecast is identically zero; skill must come from somewhere else. Exploratory analysis suggested where: after removing the seasonal cycle, observations at upstream stations (Maastricht, Tours, De Bilt) correlate 0.35--0.40 with Basel's next-day temperature change, consistent with warm- and cold-air advection in the mid-latitude westerlies.
+
+The contribution is twofold. First, a problem formulation that moves persistence out of the model and into the evaluation, together with an evaluation protocol (strict chronological splitting, training-only statistics, block-bootstrap confidence intervals) designed so that every reported number is interpretable (Section~\ref{sec:formulation}). Second, a controlled experiment on this formulation: a ladder from naive baselines through regularised linear models to a small MLP, plus feature ablations and a multi-station extension (Sections~\ref{sec:model}--\ref{sec:experiments}). The models are deliberately simple; the point is to measure how much skill the problem contains, not to maximise a leaderboard metric.
+
+\section{Dataset}
+\label{sec:dataset}
+
+We use the weather prediction dataset of Huber et~al.~\cite{huber2023} (MIT licence), derived from the European Climate Assessment \cite{kleintank2002}, at the release commit \texttt{83d70ee}. The main table covers 3654 consecutive days from 2000-01-01 to 2010-01-01 for 18 European stations, with \texttt{DATE} and \texttt{MONTH} plus 163 features: 18 stations $\times$ 11 variables (temperatures, humidity, pressure, wind, radiation, sunshine, cloud cover, precipitation), of which 198 station--variable cells are theoretically possible and 35 are absent entirely (\texttt{wind\_gust} exists at only 7 stations; Basel reports neither wind speed nor gusts).
+
+\paragraph{Upstream processing that must be declared.}
+The release is ``clean'' only by construction. Columns missing more than 5\% of values were dropped outright; columns missing at most 5\% were mean-imputed by the dataset authors. Both operations are documented upstream, and both affect modelling: mean imputation compresses variance and inflates correlations in the affected columns, and dropping sparse columns removes real (if patchy) information such as wind gusts. Units are heterogeneous by design---pressure is expressed in units of 1000\,hPa (population std 0.013), humidity in $[0,1]$, wind gusts reach 41\,m/s---so any distance- or gradient-based model requires standardisation.
+
+\paragraph{Physical-impossibility audit.}
+Because upstream imputation fills rather than flags defects, we audited every cell against physical ranges. We found 77 impossible values (0.013\% of 595{,}602 cells): \texttt{STOCKHOLM\_cloud\_cover}$=-99$ (sentinel residue), 29 days of negative sunshine at Stockholm, three Stockholm pressures of $-0.099$, one Tours pressure of $0.0003$, and 41 days where \texttt{temp\_min} exceeds \texttt{temp\_max} (40 at Heathrow, 1 at Roma). The damage concentrates at two stations rather than spreading evenly, and one defective cell (Stockholm cloud cover, 2009-06-25) falls inside the test period. Left untreated, differencing turns sentinels into $\pm 100\tc$ artefacts; Section~\ref{sec:pipeline} handles all 77 cells before any differencing.
+
+\paragraph{Statistical structure.}
+Three facts drive the rest of the design. (i)~The monthly climatology of Basel's daily mean temperature explains 74.4\% of its variance; the deseasonalised anomaly has lag-1 autocorrelation 0.819, but the \emph{day-to-day change} has lag-1 autocorrelation 0.075, near white noise. (ii)~The feature matrix is heavily redundant: 62 of 163 features belong to pairs with $|r| > 0.95$ (maximum 0.996, between the pressures of two neighbouring stations). (iii)~Cross-station information is the only plausible source of incremental signal: after removing the monthly cycle (estimated on training years only), Maastricht's and Tours' same-day observations correlate 0.35--0.40 with Basel's next-day temperature change, while Basel's own current change correlates at only 0.075.
+
+\section{Problem Formulation}
+\label{sec:formulation}
+
+\subsection{Three candidate targets, three difficulty floors}
+\label{sec:targets}
+
+For a temperature series, the ``prediction problem'' changes qualitatively depending on what is being predicted. Table~\ref{tab:targets} summarises the three candidates.
+
+\begin{table}[htbp]
+\centering
+\caption{Three candidate targets for next-day temperature prediction at Basel, and what a strong score on each would actually certify. Persistence and climatology numbers are computed on the test window defined in Section~\ref{sec:protocol}.}
+\label{tab:targets}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Target & Seasonal share & Persistence score & High score certifies \\
+\midrule
+Raw $T_{\text{mean}}(t{+}1)$ & 74.4\% of variance & MAE 1.667\tc{} ($R^2=0.9206$) & calendar $+$ inertia \\
+Deseasonalised anomaly & (removed by design) & RMSE 2.288\tc & anomaly persistence \\
+$\dmax(t{+}1)$ & ${\approx}\,0$ by construction & MAE 2.393\tc{} (zero-change) & meteorology, if anything \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Predicting the raw value is dominated by two free sources of skill. Predicting the anomaly removes the calendar but leaves anomaly persistence, which a persistence forecast already captures (2.288 vs.\ 3.378\tc{} RMSE for the climatological-anomaly null, from our formulation probe). Predicting the \emph{change} removes both free lunches at once. The cost is honesty about difficulty: the day-to-day change is nearly white noise (lag-1 autocorrelation 0.075), so achievable skill is bounded far below what raw-temperature scores suggest. We consider that the correct trade for a study whose object is model skill rather than leaderboard accuracy.
+
+\subsection{Formal definition}
+\label{sec:definition}
+
+Let $x_t \in \mathbb{R}^{163}$ collect all raw observations on day $t$ across the 18 stations, augmented with the engineered blocks of Section~\ref{sec:features}. The target is
+\begin{equation}
+y_t \;=\; \dmax^{\text{BASEL}}(t{+}1) \;=\; T^{\text{BASEL}}_{\max}(t{+}1) - T^{\text{BASEL}}_{\max}(t),
+\label{eq:target}
+\end{equation}
+and we learn $f: \mathbb{R}^{p} \to \mathbb{R}$ by minimising an empirical risk $\frac{1}{n}\sum_t \ell\!\left(f(x_t), y_t\right)$, with $\ell$ the squared error (linear models) or the Huber loss (MLP), plus an optional penalty. $T_{\max}$ is used because it is available at all 18 stations, unlike \texttt{temp\_min} (missing at Budapest).
+
+\subsection{Equivalence argument: moving persistence into the evaluation}
+\label{sec:equivivalence}
+
+Predicting $\dmax$ rather than $T_{\max}(t{+}1)$ is \emph{not} a claim that the function class differs. When $T_{\max}(t)$ is among the inputs, any predictor of tomorrow's level converts into a predictor of the change by subtracting the input, and vice versa: the two tasks share a hypothesis space. What changes is the \emph{evaluation}. In level space the strongest baseline is persistence, $\hat{T}(t{+}1) = T(t)$, and a model is judged against it; in change space the persistence forecast is the constant zero, and persistence skill is removed from every model by construction. A model that simply copies $T_{\max}(t)$ scores MAE $2.393\tc$ (the zero-change baseline) in our space but $1.667\tc$ in level space; the formulation makes this difference visible in the metric itself instead of leaving it buried in a baseline comparison that a reader must remember to check.
+
+\subsection{Rejected formulations}
+\label{sec:rejected}
+
+We considered and rejected four alternative tasks. Next-day raw temperature is persistence-contaminated and is covered by the dataset's own teaching notebooks and public Kaggle kernels. Sunshine-duration regression is those notebooks' headline experiment. Picnic-suitability and month classification are derived labels: the picnic label is a deterministic rule (``no rain and warm''), constant-false at one station, and its monthly positive rate varies 120-fold, so a randomised split degenerates the task into calendar guessing. Precipitation-amount regression is 35--75\% zero-inflated per station and would need hurdle-style treatment that does not fit the scope. Next-day precipitation \emph{occurrence} remains a legitimate low-skill extension but is left out for the same scope reason.
+
+\subsection{Evaluation protocol}
+\label{sec:protocol}
+
+\paragraph{Splitting.} Raw daily temperature has lag-1 autocorrelation 0.957, so any randomised split leaks. We use one fixed chronological split: train 2000--2007 (2922 days; 2920 aligned samples), validation 2008 (366), test 2009-01-01 through 2010-01-01 (366; the last day is a single boundary day, so the window is effectively calendar 2009 plus one day). The validation year decides all model and hyperparameter choices; the test year is evaluated exactly once per final configuration.
+
+\paragraph{Statistics are training-only.} Cleaning thresholds, imputation medians, standardisation parameters, monthly climatologies, and regularisation strengths are estimated on 2000--2007 only and applied unchanged to 2008 and 2009.
+
+\paragraph{Metrics.} MAE in \tc{} is the primary metric because the target is heavy-tailed (frontal passages produce $|\dmax| > 10\tc$). We additionally report RMSE, $R^2$ computed in change space, the Pearson correlation between predicted and observed changes (undefined for near-constant forecasts, reported as ``---''), and
+\begin{equation}
+\text{skill} \;=\; 1 - \frac{\text{MAE}_{\text{model}}}{\text{MAE}_{\text{zero}}},
+\label{eq:skill}
+\end{equation}
+the fractional MAE reduction relative to the zero-change baseline. Skill is the headline number throughout.
+
+\paragraph{Uncertainty.} The test window holds 366 days, so a MAE difference of 0.1\tc{} is close to noise (the standard error of MAE at this sample size is ${\approx}\,0.17\tc$). All intervals are moving-block bootstrap 95\% CIs with block length 7 days (weather systems have 3--5-day memory, so 7-day blocks decorrelate), 1000 resamples, fixed seed. Differences between two models use \emph{paired} bootstraps on the same resampled blocks, which is more sensitive than comparing overlapping marginal CIs.
+
+\section{Model}
+\label{sec:model}
+
+\subsection{Pipeline}
+\label{sec:pipeline}
+
+A single pipeline serves every model: (1)~physical-range masking of the 77 defective cells to NaN, \emph{before} any differencing, so sentinels cannot become $\pm 100\tc$ spikes in the $\Delta$ features; (2)~imputation of masked and missing cells with per-station, per-calendar-month medians estimated on the training years; (3)~feature construction (Section~\ref{sec:features}); (4)~standardisation with training-set mean and std; (5)~the model ladder (Section~\ref{sec:ladder}); (6)~evaluation under the Section~\ref{sec:protocol} protocol. The masking step reproduces the exploratory audit exactly (77 cells), which doubles as a regression test for the pipeline.
+
+\subsection{Feature blocks}
+\label{sec:features}
+
+From the imputed 163-column table we build four blocks.
+\begin{itemize}
+\item \textbf{levels} (163): all day-$t$ observations, standardised.
+\item \textbf{deltas} (163): the same columns differenced over one day ($x_t - x_{t-1}$); change features carry the weather-system signal.
+\item \textbf{grads} (7): pressure at each of seven upstream stations minus pressure at Basel, a geostrophic-wind / advection proxy. The upstream set \{Maastricht, Tours, D\"usseldorf, M\"unchen, Kassel, De Bilt, Heathrow\} was fixed from a lead-correlation probe (day-ahead anomaly correlations 0.69--0.80; six by rank, Heathrow by westerly-upwind position) before any model in this report was fit.
+\item \textbf{controlled, off by default}: day-of-year $\sin/\cos$ (2) and missing-value indicators (163). These exist only as ablation arms (Section~\ref{sec:ablation}); the main configuration excludes them so that no calendar information enters by the back door.
+\end{itemize}
+The main input is levels $+$ deltas ($p = 326$); adding grads gives $p = 333$. Two reduced inputs serve the ablation: the upstream-7 subset (14 columns: upstream $T_{\max}$ levels and deltas) and the own-station pair (Basel $T_{\max}$ level and delta, $p=2$).
+
+\subsection{Model ladder}
+\label{sec:ladder}
+
+\paragraph{Baselines.} \emph{Zero-change}: $\hat y = 0$, the persistence forecast translated into change space; this is the admission bar of Eq.~\ref{eq:skill}. \emph{Yesterday-$\Delta$}: $\hat y_t = \dmax(t)$, repeating today's change; it should fail, and its failure documents that the change series has no exploitable autocorrelation. \emph{Monthly-$\Delta$ climatology}: the training-period mean change per calendar month; it should land at approximately zero skill.
+
+\paragraph{Ridge (closed form).} For each feature set we solve
+\begin{equation}
+\hat w \;=\; \arg\min_w \frac{1}{n}\lVert Xw - y\rVert_2^2 + \alpha \lVert w\rVert_2^2
+\;=\; (X^{\top}X + n\alpha I)^{-1} X^{\top} y
+\label{eq:ridge}
+\end{equation}
+exactly via \texttt{torch.linalg.solve}---no epochs, no convergence concerns, exact to machine precision. The single hyperparameter $\alpha$ is selected on a $\log$-grid of 25 values spanning $10^{-2}$ to $10^{4}$ by validation MAE on 2008. With 2920 training samples and $p \le 333$ the solve is instantaneous, which makes the whole ablation program cheap and exactly reproducible.
+
+\paragraph{Lasso ($L_1$, gradient-trained).} $\min_w \frac{1}{n}\lVert Xw-y\rVert_2^2 + \alpha\lVert w\rVert_1$, optimised with Adam (200 epochs), $\alpha$ selected on 2008 from a geometric grid of 8 values in $[10^{-3}, 1]$. Lasso serves two purposes: a second regularisation family as a robustness check on ridge, and an interpretable map of which physical channels survive sparsity pressure.
+
+\paragraph{MLP (capacity ceiling probe).} A small feed-forward network: hidden sizes $\{32\}$, $\{64,32\}$ or $\{128,64\}$; GELU activations; dropout $\in \{0.2,\,0.4\}$; weight decay $\in \{10^{-4},\,10^{-3}\}$ (12 configurations in total). It is trained with the Huber loss ($\delta = 1$ on targets standardised by the training-period $\sigma_\Delta$), Adam (lr $10^{-3}$, batch 64), and early stopping on validation MAE (patience 30, at most 300 epochs). Each configuration is trained with three fixed seeds $\{0,1,2\}$; the configuration is chosen by \emph{mean validation MAE}, and the reported test number is the mean of the three seeds' predictions (the ensemble). The MLP's role is explicitly bounded: with ${\sim}2.9$k training samples and low signal-to-noise, it probes whether capacity adds anything beyond the linear solutions, and a null result is a finding, not a failure.
+
+\paragraph{Multi-station pooled extension.} The 18 stations' change series are stacked into 65{,}736 station-days (18 $\times$ 3652 aligned days; test slice 6588), each with the same global 326-column feature field (day-$t$ observations at all stations) and its own station's $\dmax$ as target. Because station-specific mean changes are near zero, pooling across stations is physically admissible in change space in a way it never is at level space. We compare pooled zero-change, one global ridge, one global MLP, and 18 independent per-station ridge models.
+
+\paragraph{Implementation.} All models are implemented in PyTorch (2.13, CUDA) under one shared library; every number in Section~\ref{sec:experiments} is produced by a committed script listed in Appendix~A. Random seeds are fixed everywhere (bootstrap seed 42; MLP seeds 0--2).
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Main results}
+\label{sec:main}
+
+Table~\ref{tab:main} is the canonical result table; Figure~\ref{fig:ladder} visualises the ladder. Three findings stand out.
+
+\begin{table}[htbp]
+\centering
+\caption{Test-period results for $\dmax(t{+}1)$ at Basel (366 days, 2009). MAE in \tc{} with 95\% moving-block-bootstrap CIs (7-day blocks, 1000 resamples). Skill is defined in Eq.~\ref{eq:skill}. Corr is the Pearson correlation between predicted and observed changes.}
+\label{tab:main}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Model & MAE [95\% CI] & RMSE & $R^2$ & Corr & Skill \\
+ & (\tc) & (\tc) & & & vs.\ zero \\
+\midrule
+Zero-change (bar) & 2.393 [2.104, 2.680] & 3.176 & $-0.000$ & --- & --- \\
+Yesterday-$\Delta$ & 3.447 [3.033, 3.916] & 4.647 & $-1.141$ & $-0.072$ & $-44.0\%$ \\
+Monthly-$\Delta$ climatology & 2.393 [2.098, 2.682] & 3.174 & 0.001 & 0.034 & $+0.0\%$ \\
+\addlinespace
+Ridge: levels only (163) & 1.845 [1.651, 2.033] & 2.383 & 0.437 & 0.665 & $+22.9\%$ \\
+Ridge: levels$+\Delta$ (326) & 1.827 [1.623, 2.014] & 2.400 & 0.429 & 0.660 & $+23.7\%$ \\
+Ridge: levels$+\Delta+$grad (333) & 1.829 [1.624, 2.012] & 2.410 & 0.424 & 0.660 & $+23.6\%$ \\
+Ridge: upstream-7 subset (14) & 2.056 [1.829, 2.284] & 2.760 & 0.245 & 0.502 & $+14.1\%$ \\
+Ridge: own station only (2) & 2.392 [2.104, 2.675] & 3.152 & 0.015 & 0.183 & $+0.0\%$ \\
+\addlinespace
+Lasso: levels$+\Delta$ (326) & 1.773 [1.574, 1.955] & 2.365 & 0.445 & 0.671 & $+25.9\%$ \\
+MLP ensemble (best config) & \textbf{1.751} [1.546, 1.946] & 2.341 & 0.457 & 0.682 & $\mathbf{+26.9\%}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{figures/fig10_model_ladder.png}
+\caption{Model ladder on the test window (366 days). Bars: test MAE in \tc; whiskers: 95\% block-bootstrap CIs. Grey: naive baselines; blue: ridge variants; orange: Lasso; red: MLP ensemble. The dashed line marks the zero-change bar (2.393\tc). All learned models clear the bar with non-overlapping CIs; the three learned models overlap each other.}
+\label{fig:ladder}
+\end{figure}
+
+First, all three learned models beat the zero-change baseline with paired-bootstrap differences significantly below zero (Table~\ref{tab:pairwise}): the skill is real, not a fluctuation. Second, the differences \emph{among} the learned models are not significant. The MLP improves on ridge by $0.076\tc$ with a 95\% CI of $[-0.149, 0.000]$---consistent with no improvement beyond linear. Third, information matters more than model class: the full field beats the upstream-7 subset by a significant $0.229\tc$, while the target station's own observations alone deliver $+0.0\%$ skill. A linear model fed the right information beats an MLP fed a subset.
+
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.46\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig11_test_scatter_mlp.png}
+\end{minipage}\hfill
+\begin{minipage}{0.51\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig12_seasonal_mae.png}
+\end{minipage}
+\caption{Left: MLP-ensemble predictions vs.\ observed $\dmax$ on the test window (MAE 1.75\tc, $r = 0.68$); the model captures moderate changes but shrinks extremes, as expected for a conditional mean under heavy-tailed targets. Right: monthly error profile, test 2009; both the zero-change baseline (grey) and the MLP (red) error most in winter months, when change variance is largest, and the skill gap is widest there.}
+\label{fig:scatter}
+\end{figure}
+
+The scatter (Fig.~\ref{fig:scatter}, left) shows the expected signature of a conditional-mean fit under a heavy-tailed target: strong shrinkage of extreme changes ($|\dmax| > 6\tc$ events are systematically under-predicted). This is not a defect specific to the MLP---a model that cannot resolve the drivers of individual frontal passages minimises expected loss precisely by shrinking---but it caps the achievable MAE and motivates the seasonal analysis: both model and baseline err most in winter (Fig.~\ref{fig:scatter}, right), when the variance of $\dmax$ is largest.
+
+\subsection{Pairwise significance}
+\label{sec:pairwise}
+
+\begin{table}[htbp]
+\centering
+\caption{Paired block-bootstrap differences in test MAE (A $-$ B, in \tc; negative = A better). ``sig'' marks 95\% CIs excluding zero.}
+\label{tab:pairwise}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+A $-$ B & diff (\tc) & 95\% CI & sig \\
+\midrule
+MLP $-$ zero & $-0.642$ & $[-0.843, -0.467]$ & \checkmark \\
+Lasso $-$ zero & $-0.620$ & $[-0.834, -0.416]$ & \checkmark \\
+Ridge (lvl$+\Delta$) $-$ zero & $-0.566$ & $[-0.769, -0.383]$ & \checkmark \\
+MLP $-$ ridge (lvl$+\Delta$) & $-0.076$ & $[-0.149, 0.000]$ & \\
+MLP $-$ Lasso & $-0.023$ & $[-0.119, 0.068]$ & \\
+Lasso $-$ ridge (lvl$+\Delta$) & $-0.054$ & $[-0.101, 0.002]$ & \\
+Ridge (lvl$+\Delta$) $-$ ridge (up7) & $-0.229$ & $[-0.367, -0.115]$ & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reading of Table~\ref{tab:pairwise} is deliberately conservative. The MLP-versus-ridge interval touches zero at its upper bound; we therefore describe the MLP as \emph{consistent with no improvement beyond linear} rather than claiming a small win. At 366 test days, effects smaller than ${\sim}0.1\tc$ cannot be resolved.
+
+\subsection{Feature ablations}
+\label{sec:ablation}
+
+\begin{table}[htbp]
+\centering
+\caption{Feature-set ablation (all with the same protocol; ridge except where noted). Dims: number of input columns. Skill vs.\ zero-change.}
+\label{tab:ablation}
+\small
+\begin{tabular}{@{}lccl@{}}
+\toprule
+Feature set & Dims & MAE (\tc) & Skill \\
+\midrule
+levels only & 163 & 1.845 & $+22.9\%$ \\
+deltas only & 163 & 1.978 & $+17.4\%$ \\
+levels $+$ deltas (main) & 326 & 1.827 & $+23.7\%$ \\
+$+$ pressure grads & 333 & 1.829 & $+23.6\%$ \\
+$+$ grads $+$ day-of-year $\sin/\cos$ & 335 & 1.834 & $+23.4\%$ \\
+$+$ grads $+$ missing indicators & 496 & 1.842 & $+23.0\%$ \\
+upstream-7: levels $+$ deltas & 14 & 2.056 & $+14.1\%$ \\
+upstream-7: deltas only & 7 & 2.115 & $+11.6\%$ \\
+upstream-7: deltas $+$ grads & 14 & 2.075 & $+13.3\%$ \\
+own station: level $+$ delta & 2 & 2.392 & $+0.0\%$ \\
+\addlinespace
+Lasso, full (326), val-$\alpha$ & 326 & 1.773 & $+25.9\%$ \\
+Lasso top-25 features, ridge refit & 25 & 1.859 & $+22.3\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ablation} carries four messages. (i)~Levels and deltas each carry most of the signal alone and add little to each other (22.9\% and 17.4\% individually, 23.7\% combined): the two blocks largely encode the same weather systems. (ii)~The two controlled arms behave correctly: adding day-of-year features \emph{lowers} skill (23.4\% vs.\ 23.7\%), confirming that the change target contains no calendar free lunch, and missing indicators do not help (23.0\%). (iii)~Pressure gradients are redundant given the full field ($+23.6\%$ vs.\ $+23.7\%$) but add value within the upstream subset ($11.6\% \to 13.3\%$), i.e.\ they carry partially overlapping physical information. (iv)~Sparsity pressure keeps a compact core: a ridge refit on the Lasso's top-25 features retains 22.3 of the full model's 23.7 percentage points of skill, so an interpretable quarter-sized model exists---but at the validation-optimal $\alpha$ the Lasso keeps 324 of 326 coefficients non-zero, and the honest description of the signal is \emph{distributed}, not ``a few magic features''.
+
+\subsection{Which physical channels?}
+\label{sec:channels}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/fig13_lasso_coefs.png}
+\caption{Top 15 Lasso coefficients in absolute value (standardised scale), test model. Blue: positive, orange: negative. The dominant channels are pressure \emph{changes} at Basel, Heathrow, Mont\'elimar and Tours, followed by upstream humidity changes---a pressure-field, advection-consistent signature.}
+\label{fig:coefs}
+\end{figure}
+
+Figure~\ref{fig:coefs} shows the largest standardised Lasso coefficients: the day-to-day \emph{changes} of pressure at Basel ($+0.28$), Heathrow ($-0.30$), Mont\'elimar ($+0.23$) and Tours ($-0.17$), then upstream humidity changes (Maastricht $+0.13$, Dresden $-0.12$). Pressure is the circulation variable, and its local tendency is the classic nowcasting predictor of temperature change; the upwind stations' pressure tendencies entering with alternating signs is consistent with synoptic systems crossing the domain. We report this as an observed signature of the fitted weights, not as a causal claim: with 326 standardised, collinear inputs, individual coefficients are not identifiable, and the correct statement is that the pressure field dominates the weight mass.
+
+\subsection{MLP grid}
+\label{sec:mlpgrid}
+
+The 12-configuration grid is flat: every configuration's test ensemble MAE lies between 1.70 and 1.75\tc. The validation-selected configuration (64--32 hidden units, dropout 0.4, weight decay $10^{-4}$; mean val MAE 1.797\tc) gives per-seed test MAEs of 1.795 / 1.758 / 1.757\tc{} (seed std 0.018) and ensemble 1.751\tc. The flatness across capacities from 544 to ${\sim}12$k parameters is itself the result: at this sample size and noise level, capacity is not the binding constraint, and the val-selection protocol protects us from mistaking the luckier grids (some unselected configurations scored 1.70 on test) for better models.
+
+\subsection{Multi-station extension: a negative result}
+\label{sec:pooled}
+
+\begin{table}[htbp]
+\centering
+\caption{Multi-station extension (6588 test station-days, 2009). Per-station models are 18 independent ridge fits on the full field; pooled models are single global fits with per-station targets.}
+\label{tab:pooled}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Model & MAE (\tc) & 95\% CI & Skill vs.\ pooled zero \\
+\midrule
+Pooled zero-change & 2.187 & --- & --- \\
+Per-station ridge (18 models, mean) & \textbf{1.705} & [1.299, 1.998]$^{\dagger}$ & $+22.0\%$ \\
+Pooled ridge (one global model) & 2.066 & [2.016, 2.115] & $+5.5\%$ \\
+Pooled MLP & 2.038 & [1.986, 2.088] & $+6.8\%$ \\
+\bottomrule
+\multicolumn{4}{l}{\footnotesize $^{\dagger}$range over stations, not a bootstrap CI.}
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{figures/fig14_station_skill.png}
+\caption{Per-station test MAE (366 days each): zero-change baseline (grey) vs.\ an independent ridge per station (blue), sorted by baseline difficulty. Skill is positive at all 18 stations, and baseline difficulty varies substantially across stations.}
+\label{fig:stations}
+\end{figure}
+
+Pooling fails, and informatively so: one global ridge is 0.36\tc{} worse than 18 independent models (2.066 vs.\ 1.705, far outside the CIs), and a pooled MLP recovers only part of the gap (2.038). The likely mechanism is station specificity---each station's change series responds differently to the same synoptic field (aspect, elevation, continentality), and a single linear map cannot express 18 different response vectors. A nonlinear model with interactions mitigates but does not remove the mismatch at this sample size. We had expected pooling to \emph{help} by averaging out station-level noise (change space removes station climatologies); the data say otherwise, and the honest report is the refutation together with the mechanism hypothesis, not a silent drop of the experiment.
+
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\paragraph{The predictability ceiling.} The three learned models cluster at 24--27\% skill with statistically indistinguishable differences. We interpret this plateau as a property of the task, not of the models: once persistence and the calendar are removed from the target, the remaining variance is mostly synoptic noise at the day-ahead horizon, and ${\sim}25\%$ of MAE reduction is what the available information supports. The clean failure of the yesterday-$\Delta$ baseline ($-44\%$) and of the own-station-only model ($+0.0\%$) delimits the signal: it lives in the spatial field, above all the pressure field, not in the target's own history.
+
+\paragraph{Sample size versus capacity.} With 2920 training samples and low signal-to-noise, the MLP's advantage over the exact linear solution is within noise. This is the sample-size--capacity trade-off that the MLP was designed to expose; it is a legitimate experimental outcome. Deeper or wider networks were not attempted because the validation criterion would not support them: the grid already shows no val-MAE gradient favouring capacity, and adding parameters under early stopping cannot manufacture signal that the linear solution cannot see.
+
+\paragraph{What the upstream processing does to these numbers.} The dataset's mean imputation of sparse columns compresses variance and inflates correlations in exactly those columns; our per-station, per-month median imputation of the 77 audited cells is a second manipulation, applied after masking. Neither is innocuous in principle, but both act on ${\le}0.1\%$ of cells and on columns that the ablation shows are not decisive (pressure, the dominant channel, is fully observed at 15 of 18 stations). The one test-period defect (Stockholm cloud cover) is masked before differencing, so no single corrupted cell can drive the reported numbers.
+
+\paragraph{Statistical power.} A 366-day test window bounds what can be claimed: effects below ${\sim}0.1\tc$ are unresolvable, and the borderline MLP-versus-ridge interval should be read as exactly that. The multi-station stack (6588 station-days) has more power but answers a different question (per-station response heterogeneity); we preferred a smaller, cleaner claim over a pooled number whose assumptions the data rejected.
+
+\paragraph{Threats to validity.} (i)~All preprocessing statistics are training-only, but feature \emph{construction} (the upstream set, the difference window of one day) was fixed after probe experiments on the same test year; the probe used RMSE in anomaly space and no test-set model selection, but a fully held-out region would be cleaner. (ii)~One target station and one test year; the per-station analysis (Fig.~\ref{fig:stations}) partially addresses generality across stations but not across years. (iii)~$T_{\max}$ at 18 stations is a homogenised ECA\&D product; upstream quality control is taken as given.
+
+\paragraph{Extensions.} Multi-horizon skill decay ($h = 1 \ldots 10$) would map the predictability limit quantitatively; next-day precipitation occurrence is the natural low-skill classification extension under the same protocol; and replacing the pooled model with station-conditional embeddings (one shared trunk, per-station heads) is the direct follow-up to the negative result of Section~\ref{sec:pooled}.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We reformulated next-day temperature prediction as day-to-day \emph{change} prediction, which removes persistence and the seasonal cycle from the reward function and makes the zero-change forecast the explicit bar. Under a strictly chronological, training-only-statistics protocol with block-bootstrap uncertainty, a ladder of deliberately simple models extracts 24--27\% MAE skill against that bar on the test year: ridge 1.827\tc, Lasso 1.773\tc, MLP ensemble 1.751\tc{} vs.\ 2.393\tc{} for zero-change, with all learned-model improvements significant and all inter-model differences within noise. The signal is spatial and pressure-dominated, consistent with mid-latitude advection; it is invisible from the target station alone; and it cannot be pooled naively across stations. The formulation's value is that every one of these statements is a falsifiable number with an interval, rather than a high $R^2$ that a persistence forecast could equally produce.
+
+\section*{Declarations}
+\sloppy
+\paragraph{Data availability.} The dataset is public (MIT licence): \url{https://github.com/florian-huber/weather_prediction_dataset}, release commit \texttt{83d70ee}, archived on Zenodo (doi:10.5281/zenodo.7525955). All code, per-experiment records, and machine-readable results are in the accompanying repository; Appendix~A lists the exact commands.
+\paragraph{AI-assistance disclosure.} The analysis code and this manuscript were prepared by the author with the assistance of an AI coding agent (OpenCode, GLM); every reported number is generated by a committed script whose output is stored in the repository, and the author verified the numbers against those outputs.
+\paragraph{Funding / competing interests.} None declared. This report was prepared as a research task assessment.
+
+\begin{thebibliography}{9}
+\bibitem{kleintank2002}
+Klein Tank, A.\,M.\,G., et~al. (2002).
+Daily dataset of 20th-century surface air temperature and precipitation series for the European Climate Assessment.
+\emph{International Journal of Climatology}, 22, 1441--1453.
+
+\bibitem{huber2023}
+Huber, F., van Kuppevelt, E.\,D., Steinbach, P., Sauz\'e, C., Liu, Y., Weel, B. (2023).
+Will the sun shine? --- An accessible dataset for teaching machine learning and deep learning.
+\emph{Proceedings of the Third Teaching Machine Learning and Artificial Intelligence Workshop}, PMLR 207, 27--31.
+\end{thebibliography}
+
+\appendix
+\section{Reproducibility}
+\label{app:repro}
+
+\paragraph{Environment.} Python 3.12 (Windows); PyTorch 2.13 (CUDA), NumPy, pandas; scikit-learn only for the exploratory phase. No randomised splitting anywhere; fixed seeds as in Section~\ref{sec:ladder}.
+
+\paragraph{One-command reproduction.} From the repository root, with the dataset CSV placed in \texttt{data/}:
+\begin{quote}
+\small
+\texttt{python analysis/eda.py} \hfill (dataset audit; Figs.~1--9 in the project record)\\
+\texttt{python analysis/r1\_baselines.py} \hfill (pipeline regression test; baseline table)\\
+\texttt{python analysis/r2\_lasso\_ablation.py} \hfill (Table~\ref{tab:ablation}; Fig.~\ref{fig:coefs} data)\\
+\texttt{python analysis/r3\_mlp.py} \hfill (MLP grid, Section~\ref{sec:mlpgrid}; pooled table)\\
+\texttt{python analysis/r4\_eval\_figures.py} \hfill (Tables~\ref{tab:main}--\ref{tab:pairwise}; Figs.~\ref{fig:ladder}--\ref{fig:stations})
+\end{quote}
+Each script writes its tables to \texttt{docs/*.csv}; every number in this report traces to one of those files, and the per-experiment narrative records in \texttt{docs/progress/} document each design decision, including abandoned ones.
+
+\paragraph{Data attribution.} Derived from ECA\&D station observations \cite{kleintank2002}; dataset and teaching context from Huber et~al.~\cite{huber2023}. Upstream processing (column dropping at ${>}5\%$ missingness, mean imputation at ${\le}5\%$, unit scaling without standardisation) is declared in Section~\ref{sec:dataset}.
+
+\end{document}

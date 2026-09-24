@@ -1,6 +1,13 @@
 data/
 docs/figures/
 
+# report build artefacts (sources + PDF are tracked)
+report/figures/
+report/*.aux
+report/*.log
+report/*.out
+report/build[0-9]*.log
+
 *.pyc
 __pycache__/
 .ipynb_checkpoints/
