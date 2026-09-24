@@ -23,7 +23,9 @@ for step in \
     "analysis/r4_eval_figures.py:R4 final tables + figures"; do
     script="${step%%:*}"; desc="${step#*:}"
     echo "=== [$script] $desc ==="
-    "$PY" "$ROOT/$script"
+    # NOTE: run from the repo root with relative paths -- the Windows Python
+    # interpreter does not understand WSL /mnt/... absolute paths.
+    (cd "$ROOT" && "$PY" "$script")
 done
 
 echo "All experiment scripts finished. Result tables: docs/*.csv, figures: docs/figures/."
