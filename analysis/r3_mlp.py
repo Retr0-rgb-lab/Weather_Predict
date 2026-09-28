@@ -78,6 +78,11 @@ def main() -> None:
                     "seed_test_std": round(float(np.std(seed_maes)), 3),
                     "ensemble_test_mae": round(float(ens_mae), 3),
                 }
+                # per-seed test MAEs, one column per seed: these are the numbers
+                # quoted in the report (sec. MLP grid) and previously existed only
+                # in the console output.
+                for seed, sm in zip(SEEDS, seed_maes):
+                    row[f"test_mae_seed{seed}"] = round(float(sm), 3)
                 grid_rows.append(row)
                 print(f"  h={str(hidden):<10} do={dropout} wd={wd:g}  val {mean_val:.3f}  "
                       f"test {row['seed_test_mean']:.3f}±{row['seed_test_std']:.3f}  "

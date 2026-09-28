@@ -163,11 +163,29 @@ def main() -> None:
     A = imp[fc].to_numpy(float)
     t_idx = np.arange(1, len(A) - 1)
     zero_s, lin_s = [], []
+    station_rows = []
     for s in wl.STATIONS:
         yss = A[t_idx + 1, fc.index(f"{s}_temp_max")] - A[t_idx, fc.index(f"{s}_temp_max")]
         f = wl.fit_linear(X[tr], yss[tr], X[va], yss[va])
-        zero_s.append(wl.mae(yss[te], np.zeros_like(yss[te])))
-        lin_s.append(wl.mae(yss[te], f.predict(X[te])))
+        z = wl.mae(yss[te], np.zeros_like(yss[te]))
+        l_ = wl.mae(yss[te], f.predict(X[te]))
+        zero_s.append(z)
+        lin_s.append(l_)
+        # Machine-readable per-station record: this is the source for the
+        # per-station skill range quoted in the report (fig14 caption).
+        station_rows.append({
+            "station": s,
+            "zero_mae": round(z, 4),
+            "ridge_mae": round(l_, 4),
+            "skill_vs_own_zero": round(1.0 - l_ / z, 4),
+        })
+    pd.DataFrame(station_rows).to_csv(ROOT / "docs" / "r4_station_skill.csv", index=False)
+    sdf = pd.DataFrame(station_rows)
+    print(f"\nper-station skill: min {sdf['skill_vs_own_zero'].min():+.1%} "
+          f"({sdf.loc[sdf['skill_vs_own_zero'].idxmin(), 'station']}), "
+          f"max {sdf['skill_vs_own_zero'].max():+.1%} "
+          f"({sdf.loc[sdf['skill_vs_own_zero'].idxmax(), 'station']}), "
+          f"ridge MAE {sdf['ridge_mae'].min():.3f}-{sdf['ridge_mae'].max():.3f}")
     order = np.argsort(zero_s)
     fig, ax = plt.subplots(figsize=(9, 4.2))
     xx = np.arange(len(wl.STATIONS))
