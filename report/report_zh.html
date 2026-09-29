@@ -295,7 +295,7 @@
 <p>让这个结果可用而不只是分数好看的，是上述每一条陈述都是一个带区间的、可证伪的数字，其中还有好几条指向相反的方向：MLP 增益上的零结果、冗余的梯度特征、以及那个只在没有站点条件时才成立的池化结果。</p>
 
 <h2>数据可得性</h2>
-<p>数据集为公开、MIT 许可：<span class="mono">github.com/florian-huber/weather_prediction_dataset</span>，release commit <code>83d70ee</code>，Zenodo 存档 doi:10.5281/zenodo.7525955。代码与机器可读结果随本报告附上；附录 A 列出重新生成每张表与每幅图的脚本。</p>
+<p>数据集为公开、MIT 许可：<span class="mono">github.com/florian-huber/weather_prediction_dataset</span>，release commit <code>83d70ee</code>，Zenodo 存档 doi:10.5281/zenodo.7525955。代码与代码、已提交的机器可读结果以及重新生成它们的脚本都随本报告附上：本报告引用的每一张表、每一幅图与每一项数据集数字，都能对应到 <code>results/</code> 下的某个文件；附录 A 列出重建它们的命令。</p>
 
 <h2 class="refs">参考文献</h2>
 <div class="refs">
@@ -318,7 +318,7 @@ python analysis/r3_mlp.py &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 python analysis/r4_eval_figures.py &nbsp;&nbsp;&nbsp;（表 2–表 3，图 1–图 4）
 </div>
 
-<p>每个脚本把自己的表写成 CSV，本报告里的每一个数字都能追溯到这些文件之一。</p>
+<p>每个脚本把自己的表写成 CSV，上述七个脚本的产物已提交在 <code>results/</code> 下；本报告里的每一个数字，无需重跑任何代码即可与其中某个文件核对。</p>
 
 <p><b>数据归属。</b>观测来自 ECA&amp;D 站点数据 [1]；数据集与背景见 Huber 等人 [2]。上游加工已在第 2 节描述：缺失率超过 5% 的列被删除，其余做均值填补，单位被缩放但未标准化。</p>
 

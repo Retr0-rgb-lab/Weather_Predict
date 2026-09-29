@@ -1,0 +1,5 @@
+model,test_MAE,MAE_lo,MAE_hi,skill_vs_zero
+pooled_zero,2.1865,,,0.0
+per_station_l2_mean,1.7048,,,0.2203
+pooled_l2,2.0659,2.0162,2.1151,0.0552
+pooled_mlp,2.0384,1.9863,2.0884,0.0677

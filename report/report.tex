@@ -356,7 +356,7 @@ What makes the result usable rather than merely high-scoring is that each of tho
 
 \section*{Data availability}
 \sloppy
-The dataset is public under the MIT licence: \url{https://github.com/florian-huber/weather_prediction_dataset}, release commit \texttt{83d70ee}, archived on Zenodo (doi:10.5281/zenodo.7525955). Code and machine-readable results accompany this report; Appendix~A lists the scripts that regenerate every table and figure.
+The dataset is public under the MIT licence: \url{https://github.com/florian-huber/weather_prediction_dataset}, release commit \texttt{83d70ee}, archived on Zenodo (doi:10.5281/zenodo.7525955). Code, the committed machine-readable results and the scripts that regenerate them accompany this report: every table, figure and dataset figure quoted below traces to a file in \texttt{results/}, and Appendix~A lists the commands that rebuild them.
 
 \begin{thebibliography}{9}
 \bibitem{kleintank2002}
@@ -387,7 +387,7 @@ Will the sun shine? --- An accessible dataset for teaching machine learning and 
 \texttt{analysis/r3\_mlp.py} \hfill MLP grid (Section~\ref{sec:mlpgrid}) and Table~\ref{tab:pooled}\\
 \texttt{analysis/r4\_eval\_figures.py} \hfill Tables~\ref{tab:main}--\ref{tab:pairwise} and Figures~\ref{fig:ladder}--\ref{fig:stations}
 \end{quote}
-Each script writes its tables as CSV, and every number in this report traces to one of those files.
+Each script writes its tables as CSV, and the outputs of the seven scripts above are committed under \texttt{results/}; every number in this report can be checked against one of those files without re-running anything.
 
 \paragraph{Attribution.} Observations derive from ECA\&D station data \cite{kleintank2002}; dataset and context from Huber et~al.~\cite{huber2023}. Upstream processing is described in Section~\ref{sec:dataset}: columns with more than 5\% missing were dropped,
 the rest mean-imputed, and units scaled without standardising.

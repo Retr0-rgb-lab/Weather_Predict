@@ -1,0 +1,8 @@
+A,B,diff_MAE_A_minus_B,CI_lo,CI_hi,sig_95
+mlp_ens_best,zero,-0.642,-0.843,-0.467,True
+lasso_l1_all163,zero,-0.62,-0.834,-0.416,True
+lin_lvld_all163,zero,-0.566,-0.769,-0.383,True
+mlp_ens_best,lin_lvld_all163,-0.076,-0.149,0.0,False
+mlp_ens_best,lasso_l1_all163,-0.023,-0.119,0.068,False
+lasso_l1_all163,lin_lvld_all163,-0.054,-0.101,0.002,False
+lin_lvld_all163,lin_up7_lvld,-0.229,-0.367,-0.115,True

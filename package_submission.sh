@@ -28,6 +28,11 @@ cp -r analysis                "$STAGE/$DEST/analysis"
 mkdir -p "$STAGE/$DEST/src"
 cp -r src/weatherlib           "$STAGE/$DEST/src/weatherlib"
 
+# ---- committed machine-readable results -------------------------------
+# The report's claim that "every number traces to a file" is only checkable if
+# these ship with it. 80 KB, 13 files: the outputs of all seven scripts.
+cp -r results                "$STAGE/$DEST/results"
+
 # ---- report source (so report.pdf is verifiable, not just readable) -----
 mkdir -p "$STAGE/$DEST/report/figures"
 cp report/report.tex           "$STAGE/$DEST/report/report.tex"
@@ -42,7 +47,8 @@ find "$STAGE" -name '.ipynb_checkpoints' -type d -prune -exec rm -rf {} + 2>/dev
 
 # ---- sanity checks ------------------------------------------------------
 for must in CV.pdf report.pdf README.md requirements.txt reproduce_all.sh \
-            analysis/r4_eval_figures.py src/weatherlib/models.py report/report.tex; do
+            analysis/r4_eval_figures.py src/weatherlib/models.py report/report.tex \
+            results/r4_final_table.csv results/r4_pairwise.csv results/eda_results.json; do
     [ -e "$STAGE/$DEST/$must" ] || { echo "MISSING from package: $must"; exit 1; }
 done
 for banned in report_zh.pdf report_zh.html docs data; do
