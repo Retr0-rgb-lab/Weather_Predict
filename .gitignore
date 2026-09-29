@@ -19,3 +19,6 @@ __pycache__/
 
 # 个人照片（已内嵌进 cv/cv.html，不入库）
 picture.jpg
+
+# 提交包（含 CV 与报告，体积大且可随时重建）
+Task Report_Huang Haoran.zip

@@ -1,0 +1,17 @@
+# Runtime environment for the experiments in this submission.
+# Verified on Windows Python 3.12; CPU-only installs work, the GPU build is optional.
+#
+#   pip install -r requirements.txt
+#
+# torch: the CUDA build is what the reported numbers were produced with. On a
+# CPU-only machine, install from the default index instead:
+#   pip install torch==2.13.0
+torch==2.13.0
+numpy==2.4.3
+pandas==3.0.3
+matplotlib==3.10.8
+
+# Exploratory probes only (analysis/formulation_probe.py, analysis/delta_t_probe.py).
+# Every model reported in report.pdf is implemented in PyTorch; scikit-learn is
+# not used by the main pipeline.
+scikit-learn==1.8.0
