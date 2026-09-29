@@ -10,5 +10,9 @@ google-chrome --headless --disable-gpu --no-sandbox --no-pdf-header-footer \
 
 [ -s CV.pdf ] || { echo "BUILD FAILED: no CV.pdf produced"; exit 1; }
 
-pages=$(grep -ac "/Type */Page[^s]" CV.pdf || true)
-echo "OK: cv/CV.pdf (${pages:-?} page marker) — copy to repo root when ready"
+pages=$(python3 -c "d=open('CV.pdf','rb').read(); print(d.count(b'/Type /Page') - d.count(b'/Type /Pages'))")
+if [ "$pages" = "1" ]; then
+    echo "OK: cv/CV.pdf (1 page)"
+else
+    echo "WARNING: cv/CV.pdf is ${pages} pages, expected 1"
+fi
