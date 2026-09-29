@@ -16,3 +16,6 @@ __pycache__/
 .DS_Store
 
 .vscode/
+
+# 个人照片（已内嵌进 cv/cv.html，不入库）
+picture.jpg
